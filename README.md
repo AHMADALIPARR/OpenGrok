@@ -12,17 +12,22 @@ Native Tensor Core attention and MACROGROK harness with app builder workspace.
   - `native/asm/` — MACROGROK pseudo-ISA
   - `native/fixed_point/` — Dedicated fixed-point engine package
 - `skills/` — Cherry-picked skill definitions (see `skills/README.md`)
-- `emacs/vm/` — Emacs VM (View Mail) reference for GNU Emacs
+- `emacs/` — Emacs packages and references
+  - `emacs/vm/` — Emacs VM (View Mail)
+  - `emacs/helm/` — Helm incremental completion framework
 - `src/` — TypeScript / React app builder (TanStack Start)
 - `.grok/` — Skills and references for the app builder
 - `ksb-plus/` — K-language binary serialization (Layer 0 + Layer 1 tables)
 - `ports/` — Ports of external systems (e.g. TermHive messaging)
 
-## Emacs VM
+## Emacs
 
-`emacs/vm/` holds the reference and example configuration for the Emacs mail reader VM (View Mail). Upstream: https://gitlab.com/emacs-vm/vm
+| Package | Path | Upstream |
+|---------|------|----------|
+| VM (View Mail) | `emacs/vm/` | https://gitlab.com/emacs-vm/vm |
+| Helm | `emacs/helm/` | https://github.com/emacs-helm/helm |
 
-Install from NonGNU ELPA: `M-x package-install RET vm RET`
+Install from ELPA: `M-x package-install RET vm RET` / `M-x package-install RET helm RET`
 
 ## Skills
 
