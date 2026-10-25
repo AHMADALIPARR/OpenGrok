@@ -22,3 +22,5 @@ if [ -z "${K:-}" ]; then
 fi
 echo "K=$K"
 "$K" t/t_binary.k
+
+"$K" t/t_ledger.k
