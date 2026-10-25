@@ -1,0 +1,14 @@
+# NRSE policy language v1 (declarative example; not a standard PEL dialect)
+engine NRSE {
+  output span_pair
+  offsets zero_based_half_open
+  missing [-1, -1]
+  generation disabled
+  require source_provenance true
+  require span_bounds true
+  require deterministic_match true
+  max_query_bytes 1000000
+  max_hits 1000
+  on_ambiguous return all_spans
+  on_invalid_span reject
+}
