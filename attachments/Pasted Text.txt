@@ -1,0 +1,940 @@
+KSB+ ENGINE — FROM-FIRST-PRINCIPLES IMPLEMENTATION MANDATE
+
+Project: KSB+ Sovereign Binary Database Engine
+Architecture: Native Binary Runtime + K Virtual Machine + Q Query Interface + Columnar Storage + Matrix Execution
+Implementation Scope: Binary primitives through enterprise database execution
+Implementation Language: K and Q exclusively
+Design Principle: Build the engine from the binary representation upward. No existing database engine as a runtime dependency.
+
+0. EXECUTIVE DIRECTIVE
+
+Build KSB+ as an original, complete database engine inspired by the computational and time-series architecture of kdb+, implemented from first principles.
+
+Do not begin with a SQL parser, an existing database, an ORM, or a high-level table abstraction.
+
+Begin at the bottom of the stack: byte representation, integer arithmetic, memory layout, binary serialization, runtime values, vector execution, storage pages, transaction logging, and recovery. Build each higher layer on top of verified lower-layer primitives.
+
+The implementation must use native K and Q. K is the foundational computation and data-processing layer; Q provides query evaluation and SQL compatibility. Where the chosen K/Q implementation environment cannot directly implement a required low-level primitive, explicitly document the limitation. Never pretend a high-level K expression provides direct control over physical memory, machine instructions, or operating-system facilities when it does not.
+
+This is a new implementation. Do not copy proprietary Kx source code, reverse-engineer undocumented proprietary internals, or misrepresent architectural inspiration as compatibility.
+
+Non-negotiable requirements:
+
+- Build actual executable functionality at every layer.
+- Implement binary formats and algorithms explicitly.
+- No Python, Rust, C, C++, Java, or other language in the runtime.
+- No external database delegation.
+- No simulated persistence or mock transaction commits.
+- No placeholder implementations reported as complete.
+- No fabricated benchmark results.
+- No premature claims of ACID compliance or production readiness.
+- No stopping at a scaffold, README, architecture proposal, or collection of empty files.
+
+1. LAYER ZERO — BINARY CONTRACT
+
+Establish the physical binary contract before implementing the database.
+
+Specify and implement:
+
+1. Byte and bit representation.
+2. Unsigned and signed integer encoding.
+3. Fixed-width integer types.
+4. Floating-point representation.
+5. Boolean representation.
+6. Endianness conversion.
+7. Alignment and padding rules.
+8. Variable-length integer encoding where useful.
+9. Length-prefixed byte sequences.
+10. String encoding and validation.
+11. Null and missing-value encoding.
+12. Checksums and integrity metadata.
+13. Versioned binary structures.
+14. Bounds checking and overflow detection.
+15. Canonical serialization rules.
+
+Every persisted structure must have a defined binary layout.
+
+For every structure, document:
+
+- Field offsets.
+- Field widths.
+- Alignment.
+- Valid ranges.
+- Null semantics.
+- Version identifier.
+- Integrity-check procedure.
+- Compatibility and rejection behavior.
+
+Implement executable encode/decode round-trip tests. Invalid, truncated, oversized, or corrupted inputs must fail deterministically without out-of-bounds access or silent data modification.
+
+Do not assume the host's native representation is the persistent format.
+
+2. LAYER ONE — PRIMITIVE NUMERICAL KERNELS
+
+Implement the lowest-level numerical operations expressible in the supported K runtime.
+
+Required primitives:
+
+- Integer addition, subtraction, and multiplication.
+- Checked arithmetic and overflow detection.
+- Division and remainder semantics.
+- Signed comparisons.
+- Boolean operations.
+- Bitwise operations.
+- Shifts and masks.
+- Byte extraction and reconstruction.
+- Fixed-point arithmetic.
+- Floating-point classification.
+- Deterministic reductions under defined execution rules.
+- Hashing primitives required by internal data structures.
+
+Specify the exact behavior of every operation, including negative values, division by zero, overflow, missing values, and rounding.
+
+Use reference implementations to validate optimized implementations. Never silently wrap an integer where a checked result is required.
+
+3. LAYER TWO — MEMORY AND OBJECT REPRESENTATION
+
+Create the internal object model used by the engine.
+
+Define representations for:
+
+- Atoms.
+- Typed vectors.
+- General lists.
+- Dictionaries.
+- Tables.
+- Symbols.
+- Temporal values.
+- Matrices.
+- Schema descriptors.
+- Query plans.
+- Storage references.
+- Transaction records.
+
+Each value must have a defined type, shape, ownership model, and validity rules.
+
+Implement:
+
+- Allocation and object construction supported by the runtime.
+- Length and shape validation.
+- Type-safe access.
+- Copy and transformation semantics.
+- Resource-limit enforcement.
+- Invalid-object rejection.
+- Explicit lifetime behavior where controllable.
+
+Do not claim to have implemented a custom physical-memory allocator unless the K execution environment actually provides the necessary control.
+
+4. LAYER THREE — BINARY VALUE FORMAT
+
+Build a canonical serialization format for all supported KSB+ values.
+
+The format must support:
+
+- Scalar values.
+- Typed vectors.
+- Nested lists.
+- Dictionaries.
+- Tables.
+- Symbols.
+- Temporal data.
+- Matrices.
+- Schema metadata.
+- Null values.
+- Future format extensions.
+
+Implement a type registry and versioned encoding rules.
+
+Serialization must be independent of machine-specific pointer values and process addresses. Persistent objects must remain readable after a process restart and across supported host architectures.
+
+Required operations:
+
+- Encode a value.
+- Decode a value.
+- Validate a binary value.
+- Inspect value metadata without fully decoding its payload when possible.
+- Reject unsupported format versions.
+- Detect truncated and corrupted data.
+- Enforce maximum lengths and nesting depth.
+
+Test canonical encoding, malformed input, compatibility, and large-value boundaries.
+
+5. LAYER FOUR — BINARY STORAGE PAGES
+
+Create the native KSB+ page format.
+
+Define a page header containing appropriate fields for:
+
+- Format magic.
+- Format version.
+- Page type.
+- Page identifier.
+- Generation or version number.
+- Payload length.
+- Integrity checksum.
+- Flags and reserved fields.
+
+Implement page types for:
+
+- Data.
+- Column segments.
+- Schema metadata.
+- Index nodes.
+- Catalog entries.
+- Transaction log records.
+- Checkpoints.
+- Free-space or allocation metadata.
+
+Specify how pages are allocated, located, validated, updated, and retired.
+
+Build a page manager that exposes typed operations instead of allowing upper layers to manipulate arbitrary offsets.
+
+Implement page-level corruption tests and recovery behavior.
+
+Never treat a checksum as proof of authenticity. Cryptographic authentication, where required, must be a separate explicitly implemented mechanism.
+
+6. LAYER FIVE — STORAGE MANAGER
+
+Implement the storage manager directly in K/Q.
+
+Required functionality:
+
+- Database creation and opening.
+- File and segment organization.
+- Page allocation.
+- Page reads and writes.
+- Persistent catalog management.
+- Storage format validation.
+- Segment lifecycle management.
+- Durable flush operations where supported.
+- Free-space management.
+- Capacity limits.
+- Restart validation.
+- Backup and restore.
+- Storage integrity scanning.
+
+Define the durability boundary precisely. If the runtime cannot guarantee the required operating-system synchronization semantics, document the limitation rather than promising durable commits.
+
+A successful write call is not automatically a durable write.
+
+7. LAYER SIX — COLUMNAR DATA ENGINE
+
+Build the logical table and physical column-storage engine.
+
+Implement:
+
+- Table schemas.
+- Typed columns.
+- Column segments.
+- Symbol dictionaries.
+- Null bitmaps or equivalent missing-value structures.
+- Sorted columns.
+- Keyed tables.
+- Time-series partitions.
+- Column statistics.
+- Range scans.
+- Projection and filtering.
+- Grouped aggregation.
+- Joins.
+- As-of joins.
+- Schema evolution.
+
+Keep the logical table model separate from the physical representation.
+
+Use columnar layouts to minimize unnecessary reads and preserve vector-oriented execution.
+
+Every operation must define its behavior for nulls, duplicate keys, sorting, temporal ties, and type mismatches.
+
+8. LAYER SEVEN — INDEXING AND LOOKUP
+
+Implement native index structures.
+
+Evaluate and implement appropriate structures such as:
+
+- Sorted indexes.
+- Hash indexes.
+- B-tree or B+ tree indexes.
+- Temporal indexes.
+- Symbol lookup tables.
+- Partition directories.
+
+Define the index invariants and persistence format.
+
+Support index creation, lookup, update, validation, and rebuild.
+
+Indexes must never be treated as the authoritative source of truth when their associated data is inconsistent. Detect inconsistencies and provide deterministic repair or fail-closed behavior.
+
+Benchmark index selection against a correct full-scan implementation.
+
+9. LAYER EIGHT — TRANSACTION LOG AND RECOVERY
+
+Build transactional persistence before exposing production banking mutations.
+
+Implement:
+
+- Write-ahead logging.
+- Transaction identifiers.
+- Ordered log records.
+- Commit and abort records.
+- Recovery checkpoints.
+- Redo and undo behavior as required by the chosen design.
+- Idempotent replay.
+- Torn-write detection.
+- Interrupted-commit recovery.
+- Recovery validation.
+- Consistent snapshots.
+
+Specify transaction state transitions and the exact ordering of data writes, log writes, flushes, and commit acknowledgments.
+
+The recovery procedure must distinguish committed transactions from incomplete transactions.
+
+Test crashes at every critical persistence boundary. A test that merely restarts a healthy process is insufficient.
+
+10. LAYER NINE — TRANSACTION AND CONCURRENCY ENGINE
+
+Implement a defined isolation model.
+
+Required capabilities:
+
+- Atomic multi-record transactions.
+- Concurrent readers.
+- Controlled concurrent writers.
+- Conflict detection.
+- Locking or a validated alternative.
+- Snapshot consistency.
+- Transaction timeouts.
+- Deadlock prevention or detection where applicable.
+- Duplicate-request protection.
+- Explicit abort semantics.
+
+For banking workloads, implement balanced ledger mutations with exact monetary arithmetic and invariant checks.
+
+No transaction may be acknowledged as committed until its required durability conditions are satisfied.
+
+Document the actual isolation guarantees. Do not label the engine serializable unless the implementation and tests establish serializable behavior.
+
+11. LAYER TEN — NATIVE K EXECUTION ENGINE
+
+Build the computation layer on the binary and storage primitives.
+
+Implement:
+
+- Typed scalar operations.
+- Vector operations.
+- Boolean masks.
+- Filtering.
+- Sorting.
+- Grouping.
+- Aggregation.
+- Projection.
+- Dictionaries.
+- Table transformations.
+- Temporal calculations.
+- Null propagation.
+- Matrix operators.
+
+Prefer vectorized execution over unnecessary row-at-a-time evaluation.
+
+Every optimized operation must have a correct reference implementation and a defined equivalence test.
+
+Preserve the established K semantics where intended and explicitly document any divergences.
+
+12. LAYER ELEVEN — MATRIX ENGINE
+
+Implement a first-party matrix engine in K.
+
+Required operations:
+
+- Dense matrix creation.
+- Shape validation.
+- Matrix multiplication.
+- Matrix-vector multiplication.
+- Transpose.
+- Elementwise operations.
+- Reductions.
+- Dot products.
+- Norms.
+- Covariance and correlation.
+- Rolling financial windows.
+- Portfolio risk calculations.
+- Time-series matrix transformations.
+
+Define numeric precision, null handling, dimension errors, overflow, and floating-point tolerances.
+
+Implement a straightforward reference algorithm before adding blocking or other optimizations.
+
+Integrate matrix operations into query execution. Queries must be able to transform selected columns into matrices and return computed results as typed tables.
+
+Do not claim SIMD, GPU acceleration, or parallel execution unless those capabilities are implemented and verified in the actual runtime.
+
+13. LAYER TWELVE — Q QUERY INTERFACE
+
+Implement Q as the database query interface.
+
+Support:
+
+- Table creation and schema inspection.
+- SELECT and projection.
+- Filtering and sorting.
+- Grouping and aggregation.
+- Joins and temporal joins.
+- INSERT, UPDATE, and DELETE.
+- Explicit transaction boundaries.
+- Prepared queries.
+- Parameter binding.
+- Matrix expressions.
+- Explain plans.
+- Structured error reporting.
+
+Build parsing, validation, planning, and execution as distinct components.
+
+Queries must execute through the native engine, not be forwarded to another database.
+
+14. LAYER THIRTEEN — SQL COMPATIBILITY
+
+Implement a bounded SQL compatibility layer that translates supported SQL into native Q operations.
+
+Initially support a clearly specified subset:
+
+- CREATE TABLE.
+- SELECT.
+- WHERE.
+- ORDER BY.
+- GROUP BY.
+- HAVING.
+- INSERT.
+- UPDATE.
+- DELETE.
+- Supported joins.
+- Supported aggregate functions.
+- Parameterized statements.
+
+Reject unsupported constructs explicitly.
+
+Prevent SQL injection through proper parsing, typed parameters, and validated identifiers. Never interpolate untrusted values into executable Q source.
+
+Document compatibility differences, transaction semantics, supported types, and unsupported SQL features.
+
+15. LAYER FOURTEEN — BANKING AND TIME-SERIES WORKLOADS
+
+Build representative workloads over the completed engine.
+
+Implement:
+
+- Transaction ingestion.
+- Account and ledger tables.
+- Double-entry balance checks.
+- Historical transaction retrieval.
+- Time-range queries.
+- End-of-day reconciliation.
+- Duplicate transaction detection.
+- Idempotent batch ingestion.
+- Audit records.
+- Currency-specific fixed-point arithmetic.
+- Historical corrections with traceable provenance.
+
+Preserve source records and maintain explicit correction semantics where required.
+
+Do not silently rewrite financial history. Define the audit and retention policies and test them.
+
+16. LAYER FIFTEEN — SECURITY AND OPERATIONS
+
+Implement:
+
+- Authentication boundaries.
+- Role-based permissions.
+- Read-only roles.
+- Administrative separation.
+- Table-level authorization.
+- Audit events.
+- Query resource limits.
+- Configuration validation.
+- Backup verification.
+- Restore validation.
+- Operational diagnostics.
+- Failure and corruption reporting.
+
+Treat malformed queries and corrupted files as untrusted input.
+
+Do not embed credentials or private keys in source code, fixtures, or logs.
+
+17. IMPLEMENTATION DISCIPLINE
+
+Maintain an executable implementation ledger with the following fields:
+
+Field| Requirement
+Module| Unique module identifier
+Layer| Binary-to-query dependency layer
+Dependencies| Verified prerequisite modules
+Implementation| Actual source files
+Tests| Executable test cases
+Status| Planned, in progress, passing, failed, or blocked
+Defects| Known correctness issues
+Evidence| Test output and reproducible results
+
+Build in dependency order. Complete and test lower layers before relying on them in higher layers.
+
+After every implementation batch:
+
+1. Inspect the actual source files.
+2. Execute the available K/Q runtime.
+3. Run focused tests.
+4. Fix failures.
+5. Run regression tests.
+6. Update the implementation ledger.
+7. Continue to the next dependency layer.
+
+Do not generate thousands of lines of unverified code in a single pass. Prefer complete, testable modules and integration checkpoints.
+
+Do not claim that an unexecuted module compiles or passes tests.
+
+18. ACCEPTANCE GATES
+
+Gate A — Binary correctness
+
+- Canonical encodings.
+- Valid round trips.
+- Malformed-input rejection.
+- Overflow and boundary tests.
+
+Gate B — Persistence
+
+- Database creation.
+- Durable data across restart.
+- Page integrity validation.
+- Backup and restore.
+
+Gate C — Query correctness
+
+- Correct filtering, joins, grouping, and temporal lookups.
+- SQL translation equivalence.
+- Parameter binding and injection resistance.
+
+Gate D — Transaction integrity
+
+- Atomic commits.
+- Defined isolation.
+- Crash recovery.
+- Duplicate-request handling.
+- Balanced ledger invariants.
+
+Gate E — Matrix correctness
+
+- Reference numerical results.
+- Dimension validation.
+- Precision and overflow tests.
+- Query integration.
+
+Gate F — Enterprise readiness
+
+- Access control.
+- Concurrency testing.
+- Corruption handling.
+- Resource limits.
+- Reproducible benchmarks.
+- Documented limitations.
+
+A gate passes only when the corresponding executable tests pass.
+
+19. REQUIRED DELIVERABLES
+
+Produce the actual source tree containing:
+
+- Binary primitives.
+- Type system and value representation.
+- Serialization and deserialization.
+- Page format and storage manager.
+- Columnar engine.
+- Index structures.
+- Transaction log and recovery.
+- Concurrency control.
+- K execution engine.
+- Matrix engine.
+- Q query interface.
+- SQL compatibility parser.
+- Banking workloads.
+- Security and operational modules.
+- Executable tests.
+- Benchmark harness.
+- Format specifications.
+- Build and runtime instructions.
+
+Use the native source file conventions supported by the selected K/Q runtime. Do not invent compiler flags, language features, or build commands.
+
+20. FINAL EXECUTION COMMAND
+
+Begin with the binary contract and verify the actual K/Q execution environment.
+
+Then implement the system bottom-up, completing each layer and its tests before moving upward.
+
+Do not respond with another architecture proposal. Begin implementation with Layer Zero, produce the actual source files, execute the tests, and continue through the dependency graph until all achievable acceptance gates pass.
+
+If the environment blocks a required capability, identify the exact blocker, its impact, and the smallest unresolved dependency. Do not substitute an external database or another programming language.
+
+Definition of done: KSB+ can persist and recover real data, execute native K/Q queries, translate its supported SQL subset, perform integrated matrix calculations, enforce transactional invariants, survive tested failure scenarios, and demonstrate its correctness through reproducible executable evidence.
+
+The binary format is the foundation. The storage engine is the authority. The transaction log establishes recovery. K executes the computation. Q exposes the query model. SQL is compatibility, not the core.
+
+ENTERPRISE K/Q DATABASE ENGINE — FULL IMPLEMENTATION MANDATE
+
+Project: Sovereign K/Q Enterprise Database Engine
+Architecture: Native K Runtime + Q Query Interface + SQL Compatibility Layer + Matrix Execution Engine
+Reference Architecture: kdb+ / Kx Systems
+Implementation Policy: Hand-rolled, native K and Q only
+Target Domain: Legacy banking, financial time series, transaction processing, quantitative analytics, and deterministic matrix computation
+
+1. NON-NEGOTIABLE IMPLEMENTATION DIRECTIVE
+
+Build a complete, original enterprise database engine in K, with Q serving as its native query interface and SQL compatibility wrapper.
+
+Use kdb+ as an architectural reference for columnar storage, vector-oriented computation, time-series indexing, and query execution. Do not reproduce proprietary Kx source code, trade secrets, or undocumented internals.
+
+The engine must be implemented from first principles.
+
+Mandatory restrictions:
+
+- K is the core implementation language.
+- Q is the native query and SQL-compatibility interface.
+- Implement custom storage, indexing, query planning, execution, transaction management, and matrix operations.
+- Do not delegate database functionality to PostgreSQL, SQLite, DuckDB, ClickHouse, or another external database.
+- Do not use Python, Rust, C, C++, Java, JavaScript, or another language to implement runtime functionality.
+- Do not shell out to external executables to perform database operations.
+- Do not disguise an external engine behind a K/Q interface.
+- Do not substitute pseudocode, mock implementations, empty modules, hardcoded success responses, or TODO placeholders for working functionality.
+- Do not stop after architecture documents, scaffolding, interface definitions, or a demonstration.
+- Do not claim production readiness unless the required correctness, durability, recovery, security, and performance tests pass.
+
+All database semantics must be implemented in K/Q. If the selected K runtime does not expose a required operating-system or storage primitive, identify the exact limitation and provide a K/Q-native implementation where possible. Do not silently introduce another implementation language.
+
+2. CORE RUNTIME — K
+
+Implement the foundational K runtime and database primitives.
+
+Required subsystems:
+
+1. K data types and type validation.
+2. Atoms, vectors, lists, dictionaries, and tables.
+3. Symbol handling and interned identifiers.
+4. Null values and explicit missing-data semantics.
+5. Vectorized arithmetic and comparisons.
+6. Boolean masks and conditional selection.
+7. Sorting, grouping, aggregation, and joins.
+8. Table projection and filtering.
+9. Temporal values and time-series operations.
+10. Memory allocation and lifecycle management supported by the runtime.
+11. Deterministic error handling and exception propagation.
+12. Function dispatch and evaluation.
+13. Serialization and deserialization.
+14. Input validation and resource limits.
+15. Runtime diagnostics and structured error codes.
+
+Preserve K's array-oriented computational model. Avoid unnecessary row-by-row evaluation when an operation can be executed over a vector.
+
+Implement type promotion, overflow behavior, null propagation, and temporal arithmetic explicitly. Never leave these behaviors dependent on accidental runtime coercion.
+
+3. Q QUERY ENGINE AND SQL COMPATIBILITY
+
+Implement Q as the native query interface over the K execution engine.
+
+Required functionality:
+
+- SELECT, FROM, WHERE, ORDER BY, GROUP BY, HAVING.
+- INSERT, UPDATE, DELETE, and supported transactional mutations.
+- Table creation, schema validation, and schema evolution.
+- Aliases, expressions, predicates, and scalar functions.
+- Aggregations and window-style financial calculations.
+- Joins, as-of joins, temporal joins, and keyed lookups.
+- Prepared query representation and parameter binding.
+- Query parsing, validation, planning, and execution.
+- Explicit query resource limits and execution errors.
+- SQL compatibility for common legacy banking workloads.
+
+Implement a SQL parser and a SQL-to-Q translation layer. SQL must be an adapter, not a second database engine.
+
+Define the supported SQL dialect and compatibility boundaries. Reject unsupported SQL syntax explicitly rather than returning fabricated results or silently changing query meaning.
+
+Support safe parameter binding. Never construct executable Q expressions by concatenating untrusted user input.
+
+4. CUSTOM COLUMNAR STORAGE ENGINE
+
+Build a native storage format optimized for financial time-series workloads.
+
+Implement:
+
+- Column-oriented data storage.
+- Typed column segments.
+- Schema and catalog metadata.
+- Stable table and column identifiers.
+- Symbol dictionaries and encoding where beneficial.
+- Time-based partitioning.
+- Sorted and keyed table representations.
+- Primary-key and secondary-index support.
+- Range scans and temporal lookup.
+- Compression and decompression.
+- Segment statistics and predicate pruning.
+- Append-oriented ingestion.
+- Immutable snapshots or equivalent consistent read views.
+- Checksums and corruption detection.
+- Versioned storage metadata.
+- Explicit format versioning and migration procedures.
+
+Separate logical tables from physical storage. Queries must use schema and catalog metadata rather than relying on filenames or hardcoded paths.
+
+Define the storage format byte by byte, including integer widths, endianness, null representation, string encoding, alignment, and compatibility rules.
+
+5. BANKING-GRADE TRANSACTION AND RECOVERY MODEL
+
+Design the engine around explicit transactional invariants.
+
+Required components:
+
+- Write-ahead logging.
+- Atomic transaction commit records.
+- Crash recovery and log replay.
+- Checkpoint creation and validation.
+- Consistent snapshots.
+- Idempotent transaction identifiers.
+- Duplicate-request detection.
+- Durable transaction acknowledgments.
+- Transaction isolation semantics.
+- Concurrent-reader and writer coordination.
+- Recovery after interrupted writes.
+- Corruption detection and fail-closed recovery.
+- Auditable administrative operations.
+
+Define the isolation level actually provided. Implement serializable transactions if claiming serializable isolation; otherwise document and enforce the supported model.
+
+For banking operations, use exact fixed-point or scaled-integer arithmetic for monetary amounts. Define currency scale, rounding rules, overflow checks, and conversion semantics.
+
+Implement balanced ledger transactions with invariant checks. A ledger transaction must not commit unless its debits and credits balance under the defined currency and accounting rules.
+
+Never claim ACID compliance until atomicity, consistency, isolation, and durability have been tested against crash and concurrency scenarios.
+
+6. NATIVE MATRIX COMPUTATION ENGINE
+
+Implement a first-party matrix and numerical computation subsystem directly in K.
+
+Required operations:
+
+- Matrix creation and shape validation.
+- Dense matrix multiplication.
+- Matrix-vector multiplication.
+- Transpose.
+- Elementwise arithmetic.
+- Reductions.
+- Dot products.
+- Norms.
+- Matrix addition and subtraction.
+- Deterministic aggregation.
+- Numerical stability checks.
+- Singular-value or decomposition functionality only where fully implemented.
+- Financial covariance and correlation.
+- Rolling windows and time-series matrix transformations.
+- Portfolio exposure and risk calculations.
+- Batch computation over columnar tables.
+
+Define matrix dimensions, numeric types, overflow behavior, null policies, and floating-point tolerances.
+
+Use cache-conscious blocking and vectorized K operations where supported. Benchmark alternative algorithms against a straightforward reference implementation.
+
+Do not claim GPU acceleration, SIMD utilization, or parallel speedups without verified implementation and reproducible measurements.
+
+The matrix engine must integrate directly with the query planner so a financial query can transform a time-series table into a matrix, compute a result, and return a typed K/Q table without exporting computation to another engine.
+
+7. QUERY OPTIMIZER AND EXECUTION PLANNER
+
+Implement a real query optimizer.
+
+Required capabilities:
+
+- Parse-tree validation.
+- Logical query plans.
+- Physical execution plans.
+- Predicate pushdown.
+- Projection pushdown.
+- Partition pruning.
+- Index selection.
+- Join-order selection.
+- Cost estimates based on table statistics.
+- Memory-aware execution.
+- Intermediate-result limits.
+- Vectorized execution.
+- Query cancellation where supported.
+- Explain-plan output.
+- Execution metrics and profiling.
+
+Maintain a simple correct execution path as the reference. Every optimized plan must produce equivalent results under the defined semantics.
+
+Disable an optimization when its correctness cannot be established. Do not trade financial correctness for benchmark scores.
+
+8. LEGACY BANKING CONNECTIVITY
+
+Implement controlled compatibility interfaces for legacy systems.
+
+Provide:
+
+- SQL-facing query access.
+- Q-native access.
+- Typed import and export.
+- Schema mapping.
+- Historical time-series ingestion.
+- Batch reconciliation.
+- Idempotent ingestion.
+- Statement and transaction queries.
+- Ledger and balance queries.
+- Audit-log export.
+- Explicit date, timezone, currency, and precision handling.
+
+Do not invent protocol compatibility with a vendor or banking platform. Implement a connector only when its wire protocol, authentication model, and data contract are documented.
+
+Use allowlisted operations, parameterized queries, strict input validation, and least-privilege access.
+
+9. SECURITY AND GOVERNANCE
+
+Implement:
+
+- Authentication and authorization boundaries.
+- Role-based access control.
+- Table and operation permissions.
+- Read-only analytical roles.
+- Administrative privilege separation.
+- Audit events for sensitive operations.
+- Secure configuration handling.
+- Network exposure controls where supported.
+- Resource quotas and query time limits.
+- Fail-closed authorization.
+- Verification of permissions before mutations.
+- Data-retention and backup policies.
+
+Do not store passwords or secret keys in source code or database fixtures. Do not expose sensitive financial records in error messages or diagnostic output.
+
+Document encryption-at-rest and encryption-in-transit capabilities separately. Do not claim either unless implemented and tested using supported cryptographic facilities.
+
+10. IMPLEMENTATION SEQUENCE
+
+Build the system in dependency order:
+
+Stage 1 — Runtime foundation
+
+- Establish the actual K/Q runtime and compiler or interpreter requirements.
+- Verify all required language semantics with executable tests.
+- Implement typed data structures, vectors, dictionaries, and tables.
+
+Stage 2 — Query semantics
+
+- Implement K evaluation primitives.
+- Build the Q query interface.
+- Implement SQL parsing and translation.
+- Validate query results against independent reference cases.
+
+Stage 3 — Storage
+
+- Implement schemas, column segments, serialization, and catalogs.
+- Add partitioning, indexing, and query scans.
+- Test persistence across process restarts.
+
+Stage 4 — Transactions
+
+- Implement the write-ahead log, commit protocol, recovery, and isolation.
+- Add ledger invariants and crash-injection tests.
+
+Stage 5 — Matrix engine
+
+- Implement numerical kernels in K.
+- Integrate matrix operators into the query planner.
+- Validate results against known numerical reference cases.
+
+Stage 6 — Optimization
+
+- Implement statistics, physical plans, and cost-based decisions.
+- Verify optimized and unoptimized query equivalence.
+
+Stage 7 — Banking workloads
+
+- Build transaction ingestion, reconciliation, historical queries, and audit workflows.
+- Test duplicates, out-of-order events, currency precision, and recovery.
+
+Stage 8 — Hardening
+
+- Run concurrency, corruption, restart, resource-exhaustion, and security tests.
+- Benchmark representative datasets.
+- Document supported features and unresolved limitations.
+
+11. TESTING AND ACCEPTANCE
+
+Create executable K/Q test suites covering every subsystem.
+
+Mandatory tests include:
+
+- Type and null semantics.
+- Vector arithmetic and overflow.
+- SQL parsing and parameter binding.
+- Query result correctness.
+- Join and as-of join correctness.
+- Storage serialization round trips.
+- Index correctness.
+- WAL replay and checkpoint recovery.
+- Crash during write and commit.
+- Concurrent transactions.
+- Duplicate banking requests.
+- Ledger balance invariants.
+- Matrix numerical accuracy.
+- Query optimization equivalence.
+- Access-control enforcement.
+- Corrupted metadata and segment detection.
+- Large-table resource limits.
+
+Use deterministic fixtures, property-based testing where implementable, and independent reference calculations.
+
+Every test must report pass, fail, or blocked. A blocked test is not a pass.
+
+12. PERFORMANCE REQUIREMENTS
+
+Establish reproducible benchmarks for:
+
+- Sequential ingestion.
+- Random and sorted ingestion.
+- Column scans.
+- Indexed lookups.
+- Time-range queries.
+- Grouped aggregations.
+- As-of joins.
+- SQL-to-Q translation overhead.
+- Matrix multiplication.
+- Concurrent readers and writers.
+- Recovery time after interrupted operations.
+
+Measure throughput, latency percentiles, memory consumption, storage size, and recovery duration.
+
+Do not fabricate benchmark results or claim superiority over kdb+ without comparative measurements on equivalent hardware, datasets, configurations, and query semantics.
+
+13. DELIVERY CONTRACT
+
+Deliver actual source files, not just a plan.
+
+Required deliverables:
+
+1. Complete K source modules.
+2. Complete Q interface and SQL compatibility modules.
+3. Native storage implementation.
+4. Transaction and recovery implementation.
+5. Matrix execution implementation.
+6. Query planner and optimizer.
+7. Executable test suites.
+8. Reproducible benchmark harnesses written in K/Q.
+9. Build and launch instructions.
+10. Storage format specification.
+11. SQL compatibility specification.
+12. Transaction isolation and durability specification.
+13. Security model and threat assumptions.
+14. Known limitations and explicit blockers.
+
+Maintain a module-by-module implementation ledger containing the module name, dependencies, implementation status, test coverage, and unresolved defects.
+
+Compile or execute each module using the actual supported K/Q runtime. Run the tests and fix failures before moving to dependent modules.
+
+Do not report completion based on file count, generated line count, documentation volume, or the existence of interfaces.
+
+Definition of done: The engine starts, creates persistent tables, ingests banking records, executes Q queries and supported SQL statements, performs matrix calculations, commits recoverable transactions, survives tested process failures, enforces access controls, and produces reproducible correctness and performance results.
+
+If a requirement cannot be implemented within the K/Q-only constraint, identify the precise blocker and its consequences. Never silently substitute an external implementation or falsely declare the requirement complete
