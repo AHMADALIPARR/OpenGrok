@@ -1,73 +1,50 @@
 / Copyright (C) 2026 AHMAD ALI PARR
 / SPDX-License-Identifier: AGPL-3.0-or-later
 / Holographic append-only ledger on KSB+ Layer 0.
-/ Each tick is one KSB+ envelope. The chain is the previous payload CRC.
-/ This is the ledger. The Rust file under ledger/ is a host demo only.
+/ Single-line for ngn/k. Uses codec.k. Each tick is one KSB+ envelope.
 
-/ Tick payload layout (inside the envelope payload):
-/   u64 ts_ns (hi;lo)
-/   u8  kind   0=quote 1=trade 2=bookadjust
-/   u8  side   0=bid 1=ask
-/   i64 price
-/   u64 size (hi;lo)
-/   u64 order_id (hi;lo)
-/   u32 prev_crc
-/   then length-prefixed symbol
+\l src/codec.k
 
-tickenc:{[ts_hi;ts_lo;kind;side;price;sz_hi;sz_lo;oid_hi;oid_lo;prev;sym]
- a:u64enc[ts_hi;ts_lo]
- b:u8enc kind
- c:u8enc side
- d:i64enc price
- e:u64enc[sz_hi;sz_lo]
- f:u64enc[oid_hi;oid_lo]
- g:u32enc prev
- h:strenc sym
- $[`err~*a; a; `err~*b; b; `err~*c; c; `err~*d; d;
-   `err~*e; e; `err~*f; f; `err~*g; g; `err~*h; h;
-   (`ok; a[1],b[1],c[1],d[1],e[1],f[1],g[1],h[1])]}
+POLY:3988292384
+b32:{[x]; (-32)#bits64 x}
+from32:{[b]; 2/b}
+xor32:{[a;b]; from32[~((b32 a)=(b32 b))]}
+shr32:{[a]; from32 32#(0, b32 a)}
+shr8:{[a]; from32 32#(8#0), b32 a}
+low8:{[a]; from32 (-8)#b32 a}
+crcbyte:{[c]; {$[*|b32 x; xor32[shr32 x; POLY]; shr32 x]}/[8;c]}
+CRCT:{crcbyte x}'!256
+crc32:{[bs]; c:{[a;ch]; xor32[shr8 a; CRCT low8 xor32[a; `i$ch]]}/[4294967295; bs]; xor32[c; 4294967295]}
+
+envenc:{[p]; c:crc32 p; h:"KSB+",(u16enc[1][1]),(u16enc[20][1]),(u16enc[0][1]),(u16enc[0][1]),(u32enc[#p][1]),(u32enc[c][1]); (`ok; h,p)}
+
+envdec:{[b]
+ $[~(4#b)~"KSB+"; (`err;"magic"); envdec2 b]}
+envdec2:{[b]
+ plen:u32dec[b;12][1]
+ crc:u32dec[b;16][1]
+ pay:plen#20_b
+ $[~(crc32[pay])~crc; (`err;"checksum"); (`ok; pay)]}
+
+tickenc:{[t]; (`ok; (u64enc[0;t[0]][1]),(u8enc t[1])[1],(u8enc t[2])[1],(u64enc[0;t[3]][1]),(u64enc[0;t[4]][1]),(u64enc[0;t[5]][1]),(u32enc t[6])[1],(u8enc t[7])[1],t[8])}
 
 tickdec:{[b]
- a:u64dec[b;0]
- $[`err~*a; a;
-   k:u8dec[b;a[3]]
-   $[`err~*k; k;
-     s:u8dec[b;k[2]]
-     $[`err~*s; s;
-       p:i64dec[b;s[2]]
-       $[`err~*p; p;
-         z:u64dec[b;p[2]]
-         $[`err~*z; z;
-           o:u64dec[b;z[3]]
-           $[`err~*o; o;
-             c:u32dec[b;o[3]]
-             $[`err~*c; c;
-               m:strdec[b;c[2]]
-               $[`err~*m; m;
-                 (`ok; a[1]; a[2]; k[1]; s[1]; p[1]; z[1]; z[2]; o[1]; o[2]; c[1]; m[1])]]]]]]]]}
+ ts:u64dec[b;0]
+ k:u8dec[b;ts[3]]
+ s:u8dec[b;k[2]]
+ p:u64dec[b;s[2]]
+ z:u64dec[b;p[3]]
+ o:u64dec[b;z[3]]
+ c:u32dec[b;o[3]]
+ n:u8dec[b;c[2]]
+ sym:n[1]#n[2]_b
+ (`ok; (ts[2];k[1];s[1];p[2];z[2];o[2];c[1];n[1];sym))}
 
-/ Seal a tick into a KSB+ envelope. prev is the CRC of the previous payload (0 at genesis).
-seal:{[ts_hi;ts_lo;kind;side;price;sz_hi;sz_lo;oid_hi;oid_lo;prev;sym]
- t:tickenc[ts_hi;ts_lo;kind;side;price;sz_hi;sz_lo;oid_hi;oid_lo;prev;sym]
- $[`err~*t; t; envenc[0; t[1]]]}
+seal:{[t]; e:tickenc t; envenc e[1]}
+open:{[env]; p:envdec env; $[`err~*p; p; open2 p]}
+open2:{[p]; d:tickdec p[1]; (`ok; d[1]; crc32 p[1])}
 
-/ Open one envelope and return the tick plus the payload CRC for chaining.
-open:{[env]
- p:envdec env
- $[`err~*p; p;
-   d:tickdec p[1]
-   $[`err~*d; d;
-     (`ok; d; crc32 p[1])]]}
-
-/ Verify a chain of envelopes. Each tick's prev_crc must equal the prior payload CRC.
-verify:{[envs]
- prev:0
- i:0
- ok:1
- while[(i<#envs)&ok;
-   o:open envs[i]
-   $[`err~*o; ok:0;
-     tick:o[1]
-     $[~(tick[9]~prev); ok:0; prev:o[2]]]
-   i:i+1]
- ok}
+verify2:{[a;b]
+ oa:open a
+ ob:open b
+ $[`err~*oa; 0; `err~*ob; 0; ~(oa[1][6]~0); 0; ~(ob[1][6]~oa[2]); 0; 1]}
