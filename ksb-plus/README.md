@@ -3,7 +3,12 @@
 Original database engine implemented in K, built from the binary contract upward.
 kdb+ is an architectural reference only. This tree does not contain Kx source and it does not wrap another database.
 
-The current push is Layer 0: fixed-width integers, IEEE-754 binary64, LEB128, length-prefixed bytes, UTF-8, option tags, CRC-32, and the versioned `KSB+` envelope. Higher layers are not claimed.
+## Layers
+
+- **Layer 0** (`src/binary.k`): fixed-width integers, IEEE-754 binary64, LEB128, length-prefixed bytes, UTF-8, option tags, CRC-32, and the versioned `KSB+` envelope.
+- **Layer 1** (`src/table.k`): columnar tables on top of the envelope. Typed columns (i32, i64, f64, bytes), `tableenc`/`tabledec`, `appendrow`, `scan`.
+
+Higher layers (indexes, query language, WAL) are not claimed.
 
 ## Run the tests
 
@@ -19,7 +24,9 @@ K="$PWD/k/k" sh t/run.sh
 
 ## Format
 
-See [docs/binary-format.md](docs/binary-format.md) and [docs/limitations.md](docs/limitations.md).
+- Layer 0: [docs/binary-format.md](docs/binary-format.md)
+- Layer 1: [docs/layer1-tables.md](docs/layer1-tables.md)
+- Limitations: [docs/limitations.md](docs/limitations.md)
 
 ## License
 
