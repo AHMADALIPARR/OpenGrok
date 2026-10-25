@@ -1,0 +1,17 @@
+[package]
+name = "macrogrok-fixed"
+version = "0.1.0"
+edition = "2021"
+description = "MACROGROK fixed-point INFER4 engine (Q1.14 / Q3.12)"
+license = "MIT"
+
+[lib]
+name = "macrogrok_fixed"
+crate-type = ["cdylib", "rlib"]
+path = "src/fixed_point.rs"
+
+[dependencies]
+# none for the core
+
+[profile.release]
+lto = true
