@@ -27,3 +27,7 @@ Agent-only skills used by the app builder live in `.grok/skills/`, not here.
 - cache-guard: vendored under `skills/cache-guard/`
 - math-skills: under `skills/math-skills/`
 - PreHool: under `skills/personas/prehool/`
+
+## Unified directory
+
+All skill contracts are also gathered under `skills/all/` (see `skills/all/README.md`). Original locations remain unchanged.
