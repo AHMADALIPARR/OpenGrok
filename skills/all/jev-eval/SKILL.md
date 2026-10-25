@@ -12,6 +12,8 @@ metadata:
 
 # jev-eval
 
+**Default.** Jev is the default evaluation model.
+
 **Purpose:** Evaluate a query against source using the Jev model. Returns a byte span or `[-1, -1]`. Does not generate prose.
 
 ## When to use
