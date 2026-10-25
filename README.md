@@ -4,25 +4,25 @@ Production repository for the OpenGrok app builder, native Tensor Core kernels, 
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok
 
+**Where files belong:** see [docs/INDEX.md](docs/INDEX.md). Every section has a purpose label in its README.
+
 ## Layout
 
 ```
 .
-├── src/                 App builder (TanStack Start, React)
-├── server/              Server entry and routes
-├── native/              Low-level code
-│   ├── cuda/            Tensor Core kernels and WMMA GEMM
-│   ├── rust/            Host code, FFI, AssemblySyscall layer
-│   ├── asm/             MACROGROK pseudo-ISA
-│   └── fixed_point/     Dedicated fixed-point package
-├── skills/             Skill definitions (SKILL.md contracts)
+├── docs/               Section map and cross-cutting notes
+├── src/                App builder (TanStack Start, React)
+├── server/             Server entry and routes
+├── native/             CUDA, Rust, assembly, fixed-point
+├── skills/             Product skill contracts (SKILL.md)
 ├── emacs/              Emacs package notes (vm, helm)
-├── ksb-plus/           K-language binary serialization (Layer 0 + Layer 1)
+├── ksb-plus/           K-language binary serialization
 ├── ports/              Ports of external systems
 ├── migrations/         Database migrations
 ├── scripts/            Build and maintenance scripts
 ├── public/             Static assets
-├── archive/            Review material (nothing required to build)
+├── archive/            Review material only
+├── .grok/              App-builder agent skills and references
 └── package.json        Node app
 ```
 
@@ -37,18 +37,10 @@ npm run typecheck
 
 Set `XAI_API_KEY` (and optionally `XAI_MODEL`) for the `askGrok` server function in `src/lib/ai/`.
 
-## Native
+## Rules
 
-See `native/README.md`.
-
-- CUDA: `native/cuda/matrix_mul.cu` (tiled WMMA GEMM)
-- Fixed-point: `native/fixed_point/` and `native/asm/infer4.asm`
-
-## Skills and Emacs
-
-- Skills: `skills/` (see `skills/README.md`)
-- Emacs VM and Helm notes: `emacs/vm/`, `emacs/helm/`
-
-## Review
-
-Loose root stubs and past attachments are collected under `archive/` so the root stays clean. Nothing there is required to build. Go through `archive/root-stubs/` and keep or drop as you see fit.
+- Topic markdown lives in its section, not in the repository root.
+- Each section's README starts with a **Purpose** line.
+- Skill contracts are `SKILL.md` inside `skills/<name>/`.
+- KSB+ format docs stay in `ksb-plus/docs/`.
+- Anything only for later review goes in `archive/`.
