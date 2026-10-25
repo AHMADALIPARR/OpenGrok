@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+// Copyright (C) 2026 AHMAD ALI PARR
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 // Capture a 1280x800 preview PNG of the dev server (argv[2] -> argv[3]).
 // Contract with SandboxInternal.CapturePreviewThumbnail: exit 0 only after the
 // PNG is written; the service treats any non-zero exit as a gated skip and does
