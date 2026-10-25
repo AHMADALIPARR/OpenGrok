@@ -12,19 +12,17 @@ Cherry-picked skill definitions from multiple sources.
 | `generate2dsprite` | Game-ready 2D characters, props, icons and FX as masters, sheets or clips. | OpenGrok-Skills |
 | `video2dsprite` | Turn one approved master still into a full animated sprite set via image-to-video. | OpenGrok-Skills |
 | `cache-guard` | Image / prompt-cache thrash prevention. Batch image reads, delegate vision to subagents, write notes, keep bulk data out of context. Includes audit script. | [claude-cache-guard](https://github.com/0x0funky/claude-cache-guard) |
+| `math-skills` | Mathematical master skill set. Six layers: enumeration, isomorphism, symmetry breaking, Hadamard, probabilistic method, circuit complexity. Fortran + APL + AXIOM. WORM-sealed. | [math-skills](https://github.com/SNAPKITTYWEST/math-skills) |
 
 ## Full source
 
-The complete scripts, references, schemas and examples for the 2D skills live in:
+- 2D skills: https://github.com/AHMADALIPARR/OpenGrok-Skills
+- cache-guard: fully vendored under `skills/cache-guard/`
+- math-skills: definitions + design doc + master seal under `skills/math-skills/`; full Fortran/APL/AXIOM implementations in the source repo
 
-```
-https://github.com/AHMADALIPARR/OpenGrok-Skills
-```
-
-The cache-guard skill (including the audit script) is fully vendored under `skills/cache-guard/`.
-
-To bring the full 2D implementations into this repo:
+To bring full implementations:
 
 ```bash
 git submodule add https://github.com/AHMADALIPARR/OpenGrok-Skills.git skills/OpenGrok-Skills
+git submodule add https://github.com/SNAPKITTYWEST/math-skills.git skills/math-skills-src
 ```
