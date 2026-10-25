@@ -1,6 +1,6 @@
-# Native Segments
+# native/
 
-Organized low-level components for OpenGrok.
+**Purpose:** Low-level native code — CUDA kernels, Rust host, MACROGROK assembly, and the fixed-point engine. Not application UI.
 
 ## Directory Layout
 
@@ -31,18 +31,14 @@ native/
 
 | Segment | Purpose |
 |---------|---------|
-| `asm/infer4.asm` | Reference pseudo-ISA for the fixed-point binary decision. |
-| **`fixed_point/`** | **Dedicated native package.** Extended Rust engine + C ABI + demo. Batch inference, state get/set/reset, extra Q conversions. |
-| `cuda/matrix_mul.cu` | Full Tensor Core WMMA GEMM engine. |
-| `cuda/tensor_core_attention.cu` | Attention built on WMMA tiles. |
-| `rust/fixed_point.rs` | Original crate-integrated copy of the fixed-point engine. |
-| `rust/attention.rs` + others | Host wrappers for CUDA kernels. |
+| `asm/` | Reference pseudo-ISA for the fixed-point binary decision. |
+| `fixed_point/` | Dedicated native package. Extended Rust engine + C ABI + demo. |
+| `cuda/` | Tensor Core kernels (GEMM and attention). |
+| `rust/` | Host wrappers and FFI for the kernels and fixed-point engine. |
 
 ## Building the fixed-point package
 
 ```bash
 cd native/fixed_point
 cargo build --release
-# produces libmacrogrok_fixed.so / .dylib / .dll
-# then link against examples/demo.c with the header
 ```
