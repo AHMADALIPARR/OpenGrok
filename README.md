@@ -10,9 +10,15 @@ Native Tensor Core attention and MACROGROK harness with app builder workspace.
   - `native/cuda/` — Tensor Core kernels, including the **full WMMA matrix multiplication engine**
   - `native/rust/` — Host code, AssemblySyscall layer, C FFI
   - `native/asm/` — MACROGROK pseudo-ISA
+- `skills/` — Cherry-picked skill definitions from https://github.com/AHMADALIPARR/OpenGrok-Skills
+  - `codeart2d`, `generate2dmap`, `generate2dmedia`, `generate2dsprite`, `video2dsprite`
 - `src/` — TypeScript / React app builder (TanStack Start)
 - `.grok/` — Skills and references for the app builder
 - `ksb-plus/` — Separate K-language binary serialization contract (Layer 0)
+
+## Skills
+
+Skill definitions are in `skills/`. Full scripts, references and schemas live in the source repository. See `skills/README.md`.
 
 ## Matrix Multiplication Engine
 
