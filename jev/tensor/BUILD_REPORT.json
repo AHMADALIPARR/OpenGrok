@@ -1,0 +1,46 @@
+{
+  "tests": "passed",
+  "test_output": "Spreadsheet runtime warmup failed during python startup\nTraceback (most recent call last):\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py\", line 26, in warm_spreadsheet_runtime_on_startup\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py\", line 785, in warm_spreadsheet_runtime\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py\", line 718, in _warm_feature_flows\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py\", line 509, in _warm_drawing_and_image_flows\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/generated/interface/models.py\", line 32861, in bring_to_front\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/remote.py\", line 764, in __call__\n  File \"/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/client.py\", line 175, in call\nartifact_tool.rpc.client.RemoteError: Element ordering requires an owning element collection.\ntest_bad_shape (test_reducer.ReducerTests.test_bad_shape) ... ok\ntest_gguf_header (test_reducer.ReducerTests.test_gguf_header) ... ok\ntest_maxabs (test_reducer.ReducerTests.test_maxabs) ... ok\ntest_mean (test_reducer.ReducerTests.test_mean) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n",
+  "demo_build_output": "{\n  \"output\": \"/mnt/data/recursive_tensor_reduction/demo_reduced.gguf\",\n  \"bytes\": 576,\n  \"sha256\": \"a990af0bcf5f2e656d40a08379750e4d21b7a4c5d76c255e70357acc174e35d8\",\n  \"source_files\": 2,\n  \"tensor_count\": 2,\n  \"manifest\": \"/mnt/data/recursive_tensor_reduction/demo_reduced.manifest.json\"\n}\n",
+  "demo_manifest": {
+    "format": "GGUF v3",
+    "output": "/mnt/data/recursive_tensor_reduction/demo_reduced.gguf",
+    "bytes": 576,
+    "sha256": "a990af0bcf5f2e656d40a08379750e4d21b7a4c5d76c255e70357acc174e35d8",
+    "operation": "mean",
+    "source_files": [
+      "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+      "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+    ],
+    "source_count": 2,
+    "tensor_count": 2,
+    "tensors": [
+      {
+        "name": "demo.bias",
+        "shape": [
+          2
+        ],
+        "dtype_written": "F32",
+        "source_dtype": "f32",
+        "source_files": [
+          "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+          "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+        ]
+      },
+      {
+        "name": "demo.weight",
+        "shape": [
+          2,
+          2
+        ],
+        "dtype_written": "F32",
+        "source_dtype": "f32",
+        "source_files": [
+          "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+          "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+        ]
+      }
+    ],
+    "warning": "GGUF structural output does not establish compatibility with a particular model architecture or semantic quality."
+  }
+}
