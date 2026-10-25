@@ -1,0 +1,29 @@
+{
+  "tensors": [
+    {
+      "name": "demo.weight",
+      "shape": [
+        2,
+        2
+      ],
+      "dtype": "f32",
+      "data": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "demo.bias",
+      "shape": [
+        2
+      ],
+      "dtype": "f32",
+      "data": [
+        0.1,
+        0.2
+      ]
+    }
+  ]
+}
