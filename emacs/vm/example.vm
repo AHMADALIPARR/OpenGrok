@@ -1,0 +1,28 @@
+;; Example ~/.vm configuration for VM (View Mail)
+;; Place in ~/.vm or load from .emacs
+
+;; Primary inbox and folder directory
+(setq vm-primary-inbox "~/mail/inbox")
+(setq vm-folder-directory "~/mail/")
+
+;; Auto-save and crash recovery
+(setq vm-auto-folder-save t)
+(setq vm-crash-box-directory "~/mail/.crash")
+
+;; MIME
+(setq vm-mime-decode-entities t)
+(setq vm-display-using-mime t)
+
+;; Virtual folders example
+;; (setq vm-virtual-folder-alist
+;;       '(("unread" (("inbox") (unread)))
+;;         ("from-me" (("inbox") (author "me@example.com")))))
+
+;; Key bindings reminder (default)
+;; SPC  - scroll forward / mark read
+;; b    - scroll backward
+;; d    - delete
+;; s    - save to folder
+;; r    - reply
+;; f    - forward
+;; n/p  - next/previous message
