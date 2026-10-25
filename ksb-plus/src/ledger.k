@@ -1,5 +1,3 @@
-/ Copyright (C) 2026 AHMAD ALI PARR
-/ SPDX-License-Identifier: AGPL-3.0-or-later
 / Holographic append-only ledger on KSB+ Layer 0.
 / Single-line for ngn/k. Uses codec.k. Each tick is one KSB+ envelope.
 

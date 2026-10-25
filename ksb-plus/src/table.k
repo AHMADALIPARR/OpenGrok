@@ -1,10 +1,3 @@
-/ Copyright (C) 2026 AHMAD ALI PARR
-/ SPDX-License-Identifier: AGPL-3.0-or-later
-/
-/ This program is free software: you can redistribute it and/or modify
-/ it under the terms of the GNU Affero General Public License as published
-/ by the Free Software Foundation, either version 3 of the License, or
-/ (at your option) any later version.
 / KSB+ Layer 1 — columnar table on top of the Layer 0 envelope.
 / A table is a named collection of columns. Each column is a typed vector.
 / On disk: one envelope whose payload is a sequence of column chunks.
