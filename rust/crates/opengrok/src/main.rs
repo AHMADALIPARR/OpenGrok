@@ -3,22 +3,18 @@
 use opengrok::*;
 
 fn main() {
-    println!("OpenGrok core (Rust)");
+    println!("OpenGrok main agent");
+
     let mut state = 0i32;
     let (out, score, flags) = infer4([16384, 0, 0, 0], &mut state);
     println!("infer4: out={} score={} flags={:03b}", out, score, flags);
 
-    let mut led = HolographicLedger::new();
-    let mut book = OrderBook::new();
-    let t = Tick { ts_ns: 1, symbol: "ETH-USD".into(), kind: EventKind::Quote,
-                   side: Side::Bid, price: 3_500_0000_0000, size: 10, order_id: 1 };
-    book.apply(&t);
-    led.append(t);
-    println!("ledger verify={} entries={}", led.verify(), led.len());
-
-    let mut acc = Accounting::new();
-    let th = Thresholds::default();
-    println!("route after 100: {:?}", acc.charge(100, th));
-    println!("route after 60000: {:?}", acc.charge(60_000, th));
-    println!("handoffs={}", acc.handoffs);
+    // Tool calls
+    let root = std::env::var("OPENGROK_TOOLS").unwrap_or_else(|_| "tools".into());
+    for line in ["ipython:print(2+2)", "bash:echo hello-from-agent"] {
+        if let Some(tc) = tools::parse(line) {
+            let r = tools::call(&root, &tc);
+            println!("tool {} -> ok={} {}", tc.name, r.ok, r.output.trim());
+        }
+    }
 }
