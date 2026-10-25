@@ -1,0 +1,14 @@
+# Project-specific PEL-style declarative contract; not a vendor-standard grammar.
+engine recursive_tensor_reduction {
+  discover recursively "*.json"
+  order paths lexicographically
+  group by tensor_name shape dtype
+  reject incompatible_shapes true
+  reject_non_finite_values true
+  reduction mean
+  output format "GGUF v3"
+  output tensor_type "F32"
+  alignment 32
+  emit sha256_manifest true
+  never_claim_model_compatibility_without_loader_validation true
+}
