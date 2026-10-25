@@ -1,29 +1,633 @@
 # OpenGrok
 
-OpenGrok is a production repository that combines an app builder, native Tensor Core kernels, a fixed-point inference engine, and skill contracts under one tree.
+OpenGrok is a production repository that combines an app builder, native Tensor Core kernels, a fixed-point inference engine, skill contracts, a holographic ledger, and local GGUF bots under one tree.
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok  
 **License:** GNU Affero General Public License v3.0 ([LICENSE](LICENSE))  
 **Where files belong:** [docs/INDEX.md](docs/INDEX.md)
 
-## What is in this repository
+## Demo
 
-| Section | What it contains |
-|---------|------------------|
-| `src/` | App builder UI and libraries (TanStack Start, React). Includes auth, app data, and the `askGrok` server function. |
-| `server/` | Server entry and server-only routes. |
-| `native/` | Low-level code: CUDA Tensor Core GEMM and attention, Rust host and FFI, MACROGROK assembly, fixed-point engine. |
-| `skills/` | Product skill contracts. Each skill is a folder with a `SKILL.md`. |
-| `emacs/` | Notes and starter configs for Emacs VM and Helm. |
-| `ksb-plus/` | K-language binary serialization (Layer 0 envelope and Layer 1 columnar tables). |
-| `ports/` | Ports of external systems (for example TermHive messaging). |
-| `migrations/` | Database migrations applied by `npm run db:migrate`. |
-| `scripts/` | Build, migrate, preview, and maintenance scripts. |
-| `public/` | Static assets. |
-| `.grok/` | Skills and references used by the app-builder agent. |
-| `docs/` | Section map and cross-cutting notes. |
-| `archive/` | Review material only. Nothing here is required to build. |
+![Grok Bots local GGUF end-to-end](bots/demo/gguf-demo.png)
 
+<div align="center">
+
+**136 turns/sec** · 20 turns · 146 ms · 5 ms avg · 334 tokens · no cloud fallback
+
+</div>
+
+## Architecture
+
+```mermaid
+flowchart LR
+  UI[src/ app builder] --> Ask[askGrok]
+  Ask -->|under budget| Cloud[xAI API]
+  Ask -->|over threshold| Local[bots/ local GGUF]
+  Native[native/ CUDA + Rust + ASM] --> FP[fixed-point INFER4]
+  KSB[ksb-plus/ codec] --> Ledger[ledger/ holographic]
+  Skills[skills/ contracts] --> Bots[bots/ Grok Bots]
+  Ports[ports/ TermHive] --> CLI[Elixir CLI]
+```
+
+## Repository map
+
+| Mark | Path | Purpose |
+|:----:|------|---------|
+| ▸ | `.grok` | Skills and references used by the app-builder agent. |
+| ✓ | `AGENTS.md` | Root file. |
+| ✓ | `LICENSE` | Root file. |
+| ✓ | `README.md` | Root file. |
+| ▸ | `archive` | Review material only. Nothing here is required to build. |
+| ▸ | `attachments` | Conversation attachments preserved for review. |
+| ✓ | `attention_tc.cu` | Root file. |
+| ▸ | `bots` | Grok Bots GGUF support, microagent notes, local demo and benchmark. |
+| ▸ | `docs` | Section map and cross-cutting notes. |
+| ▸ | `emacs` | Emacs VM and Helm starter configs. |
+| ✓ | `eslint.config.mjs` | Root file. |
+| ✓ | `fixed-point` | Root file. |
+| ▸ | `ksb-plus` | K-language binary serialization. Layer 0 envelope, Layer 1 tables, codec verification. |
+| ▸ | `ledger` | Holographic append-only ledger for tick-data and order books. |
+| ✓ | `main.rs` | Root file. |
+| ▸ | `migrations` | Database migrations applied by npm run db:migrate. |
+| ▸ | `native` | CUDA Tensor Core kernels, Rust FFI, MACROGROK assembly, fixed-point engine. |
+| ✓ | `package-lock.json` | Root file. |
+| ✓ | `package.json` | Root file. |
+| ▸ | `ports` | Ports of external systems (TermHive Elixir/PHP messaging). |
+| ▸ | `public` | Static assets. |
+| ▸ | `screenshots` | Captured UI and demo images. |
+| ▸ | `scripts` | Build, migrate, preview, and maintenance scripts. |
+| ▸ | `server` | Server entry and server-only routes. |
+| ▸ | `skills` | Product skill contracts. Unified index under skills/all/. |
+| ▸ | `src` | App builder UI and libraries (TanStack Start, React). Includes askGrok and token accounting. |
+| ✓ | `tavily.rs` | Root file. |
+| ✓ | `tma.ptx` | Root file. |
+| ✓ | `transformer.rs` | Root file. |
+| ✓ | `tsconfig.json` | Root file. |
+| ✓ | `vercel.json` | Root file. |
+| ✓ | `vite.config.ts` | Root file. |
+
+## Full tree
+
+✓ file · ▸ directory
+
+✓ `.gitignore`
+
+### ▸ `.grok/`
+
+Skills and references used by the app-builder agent.
+
+```
+✓ `README.md`
+✓ `app-env.json`
+▸ `references`
+  ✓ `browser-qa.md`
+  ✓ `data-and-auth.md`
+  ✓ `deploy-target.md`
+  ✓ `generated-art.md`
+  ✓ `hibernate-revive.md`
+  ✓ `scaffold.md`
+▸ `skills`
+  ▸ `auth`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `grok-identity.md`
+      ✓ `per-user-data.md`
+      ✓ `prewired-and-env.md`
+      ✓ `session-ui.md`
+      ✓ `sign-in-methods.md`
+      ✓ `wiring.md`
+  ▸ `building-games`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `3d-libs.md`
+      ✓ `ai-pathfinding.md`
+      ✓ `audio.md`
+      ✓ `babylon.md`
+      ✓ `collision-physics.md`
+      ✓ `ecs-architecture.md`
+      ✓ `game-feel-juice.md`
+      ▸ `genres`
+        ✓ `board-card-chess.md`
+        ✓ `endless-runner.md`
+        ✓ `fps.md`
+        ✓ `platformer-2d.md`
+        ✓ `puzzle-match3-tetris.md`
+        ✓ `racing-kart.md`
+        ✓ `topdown-twin-stick.md`
+        ✓ `tower-defense.md`
+        ✓ `voxel-minecraft.md`
+      ✓ `input.md`
+      ✓ `phaser.md`
+      ✓ `procedural-generation.md`
+      ✓ `save-persistence.md`
+      ✓ `threejs-foundational.md`
+  ▸ `controls`
+    ✓ `SKILL.md`
+  ▸ `design-ui`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `animations.md`
+      ✓ `performance.md`
+      ✓ `refined-ui.md`
+      ✓ `surfaces.md`
+      ✓ `typography.md`
+  ▸ `game-animation-frames`
+    ✓ `SKILL.md`
+  ▸ `game-asset-core`
+    ✓ `SKILL.md`
+  ▸ `game-character-consistency`
+    ✓ `SKILL.md`
+  ▸ `game-tilesets`
+    ✓ `SKILL.md`
+  ▸ `game-ui-icons`
+    ✓ `SKILL.md`
+  ▸ `generate2dmap`
+    ✓ `LICENSE`
+    ✓ `SKILL.md`
+    ✓ `SOURCE.md`
+    ▸ `references`
+      ✓ `deliverables.md`
+      ✓ `layered-map-contract.md`
+      ✓ `map-strategies.md`
+      ✓ `object-production-gate.md`
+      ✓ `pipeline.md`
+      ✓ `prop-pack-contract.md`
+      ✓ `side-scroll-stages.md`
+    ▸ `scripts`
+      ✓ `compose_layered_preview.py`
+      ✓ `extract_prop_pack.py`
+  ▸ `generate2dsprite`
+    ✓ `LICENSE`
+    ✓ `SKILL.md`
+    ✓ `SOURCE.md`
+    ▸ `references`
+      ✓ `modes.md`
+      ✓ `prompt-rules.md`
+    ▸ `scripts`
+      ✓ `generate2dsprite.py`
+      ✓ `make_layout_guide.py`
+  ▸ `imagine-grok-build`
+    ✓ `SKILL.md`
+  ▸ `multiplayer-p2p`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `react-binding.md`
+      ✓ `signaling-relay.md`
+  ▸ `neon`
+    ✓ `SKILL.md`
+  ▸ `og`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `brand-pass.md`
+      ✓ `custom-card.md`
+      ✓ `favicon-and-icons.md`
+      ✓ `og-type-contract.md`
+      ✓ `placeholder-card.md`
+      ✓ `x-banner.md`
+  ▸ `threejs`
+    ✓ `SKILL.md`
+    ▸ `references`
+      ✓ `llms-full.txt`
+  ▸ `video2dsprite`
+    ✓ `LICENSE`
+    ✓ `SKILL.md`
+    ✓ `SOURCE.md`
+    ▸ `references`
+      ✓ `pipeline.md`
+      ✓ `prompt-rules.md`
+    ▸ `scripts`
+      ✓ `video2dsprite.py`
+  ▸ `xai-api`
+    ✓ `SKILL.md`
+✓ `status`
+```
+
+✓ `.prettierrc`
+✓ `AGENTS.md`
+✓ `LICENSE`
+✓ `README.md`
+
+### ▸ `archive/`
+
+Review material only. Nothing here is required to build.
+
+```
+✓ `README.md`
+▸ `root-stubs`
+  ✓ `README.md`
+  ✓ `attention.rs`
+  ✓ `attention_tc.cu`
+  ✓ `fixed-point`
+  ✓ `main.rs`
+  ✓ `memory.rs`
+  ✓ `tavily.rs`
+  ✓ `tma.ptx`
+  ✓ `transformer.rs`
+```
+
+
+### ▸ `attachments/`
+
+Conversation attachments preserved for review.
+
+```
+✓ `Pasted Text.txt`
+```
+
+✓ `attention_tc.cu`
+
+### ▸ `bots/`
+
+Grok Bots GGUF support, microagent notes, local demo and benchmark.
+
+```
+✓ `README.md`
+▸ `demo`
+  ✓ `README.md`
+  ✓ `gguf-demo.png`
+  ✓ `run.sh`
+  ✓ `server.mjs`
+✓ `example.env`
+✓ `microagent.md`
+✓ `repl.sh`
+▸ `skills`
+  ▸ `gguf-local`
+    ✓ `SKILL.md`
+```
+
+
+### ▸ `docs/`
+
+Section map and cross-cutting notes.
+
+```
+✓ `INDEX.md`
+```
+
+
+### ▸ `emacs/`
+
+Emacs VM and Helm starter configs.
+
+```
+✓ `README.md`
+▸ `helm`
+  ✓ `README.md`
+▸ `vm`
+  ✓ `README.md`
+  ✓ `example.vm`
+```
+
+✓ `eslint.config.mjs`
+✓ `fixed-point`
+
+### ▸ `ksb-plus/`
+
+K-language binary serialization. Layer 0 envelope, Layer 1 tables, codec verification.
+
+```
+✓ `.gitignore`
+✓ `LICENSE`
+✓ `README.md`
+▸ `docs`
+  ✓ `binary-format.md`
+  ✓ `layer1-tables.md`
+  ✓ `limitations.md`
+▸ `src`
+  ✓ `binary.k`
+  ✓ `codec.k`
+  ✓ `table.k`
+▸ `t`
+  ✓ `bench_codec.k`
+  ✓ `run.sh`
+  ✓ `t_binary.k`
+  ✓ `verify_codec.k`
+```
+
+
+### ▸ `ledger/`
+
+Holographic append-only ledger for tick-data and order books.
+
+```
+✓ `Cargo.toml`
+✓ `README.md`
+▸ `src`
+  ✓ `ledger.rs`
+  ✓ `main.rs`
+```
+
+✓ `main.rs`
+
+### ▸ `migrations/`
+
+Database migrations applied by npm run db:migrate.
+
+```
+✓ `README.md`
+▸ `auth`
+  ✓ `0001_auth.sql`
+```
+
+
+### ▸ `native/`
+
+CUDA Tensor Core kernels, Rust FFI, MACROGROK assembly, fixed-point engine.
+
+```
+✓ `README.md`
+▸ `asm`
+  ✓ `infer4.asm`
+▸ `cuda`
+  ✓ `check_ptx.sh`
+  ✓ `matrix_mul.cu`
+  ✓ `tensor_core_attention.cu`
+  ✓ `tma.ptx`
+▸ `fixed_point`
+  ✓ `Cargo.toml`
+  ✓ `README.md`
+  ▸ `examples`
+    ✓ `demo.c`
+  ▸ `include`
+    ✓ `macrogrok_fixed.h`
+  ▸ `src`
+    ✓ `fixed_point.rs`
+▸ `rust`
+  ✓ `attention.rs`
+  ✓ `fixed_point.rs`
+  ✓ `full_demo.rs`
+  ✓ `lib.rs`
+  ✓ `main.rs`
+  ✓ `memory.rs`
+  ✓ `tavily.rs`
+  ✓ `transformer.rs`
+```
+
+✓ `package-lock.json`
+✓ `package.json`
+
+### ▸ `ports/`
+
+Ports of external systems (TermHive Elixir/PHP messaging).
+
+```
+✓ `README.md`
+▸ `termhive-messaging`
+  ✓ `README.md`
+  ▸ `elixir`
+    ✓ `README.md`
+    ▸ `lib`
+      ▸ `termhive`
+        ✓ `activity.ex`
+        ✓ `agent_registry.ex`
+        ✓ `application.ex`
+        ✓ `cli.ex`
+        ✓ `message_router.ex`
+        ✓ `messaging.ex`
+        ✓ `protocol.ex`
+    ✓ `mix.exs`
+  ▸ `php`
+    ✓ `README.md`
+    ▸ `src`
+      ✓ `Messaging.php`
+```
+
+
+### ▸ `public/`
+
+Static assets.
+
+```
+✓ `README.md`
+▸ `__grok`
+  ✓ `icon-180.png`
+  ▸ `install`
+    ▸ `assets`
+      ▸ `homescreen`
+        ✓ `glass-puzzle.svg`
+        ✓ `glass-share.svg`
+        ✓ `logo-grok.svg`
+        ✓ `ob-ipad.png`
+        ✓ `ob-phone.png`
+        ✓ `plus.svg`
+    ✓ `styles.css`
+```
+
+
+### ▸ `screenshots/`
+
+Captured UI and demo images.
+
+```
+✓ `.gitkeep`
+```
+
+
+### ▸ `scripts/`
+
+Build, migrate, preview, and maintenance scripts.
+
+```
+✓ `README.md`
+✓ `app-env-plugin.mjs`
+✓ `brand-check.mjs`
+✓ `brand-check.test.mjs`
+✓ `browser-guard.mjs`
+✓ `browser-smoke-verdict.mjs`
+✓ `browser-smoke-verdict.test.mjs`
+✓ `browser-smoke.mjs`
+✓ `check-auth-invariant.mjs`
+✓ `check-auth-invariant.test.mjs`
+✓ `grok-pwa-plugin.mjs`
+✓ `grok-pwa-plugin.test.mjs`
+✓ `grok-pwa-shared.d.mts`
+✓ `grok-pwa-shared.mjs`
+✓ `install-page.html`
+✓ `migrate.mjs`
+✓ `migration-plan.mjs`
+✓ `migration-plan.test.mjs`
+✓ `preview-thumbnail.mjs`
+✓ `preview.mjs`
+✓ `preview.test.mjs`
+✓ `sign-out-plan.mjs`
+✓ `sign-out-plan.test.mjs`
+✓ `with-app-env.mjs`
+✓ `with-app-env.test.mjs`
+✓ `write-atomic.mjs`
+✓ `write-atomic.test.mjs`
+```
+
+
+### ▸ `server/`
+
+Server entry and server-only routes.
+
+```
+✓ `README.md`
+▸ `middleware`
+  ✓ `grok-pwa.ts`
+✓ `virtual-grok-og-identity.d.ts`
+```
+
+
+### ▸ `skills/`
+
+Product skill contracts. Unified index under skills/all/.
+
+```
+✓ `README.md`
+▸ `all`
+  ✓ `README.md`
+  ▸ `bots`
+    ▸ `gguf-local`
+      ✓ `SKILL.md`
+  ▸ `platform`
+    ▸ `auth`
+      ✓ `SKILL.md`
+    ▸ `building-games`
+      ✓ `SKILL.md`
+    ▸ `controls`
+      ✓ `SKILL.md`
+    ▸ `design-ui`
+      ✓ `SKILL.md`
+    ▸ `game-animation-frames`
+      ✓ `SKILL.md`
+    ▸ `game-asset-core`
+      ✓ `SKILL.md`
+    ▸ `game-character-consistency`
+      ✓ `SKILL.md`
+    ▸ `game-tilesets`
+      ✓ `SKILL.md`
+    ▸ `game-ui-icons`
+      ✓ `SKILL.md`
+    ▸ `generate2dmap`
+      ✓ `SKILL.md`
+    ▸ `generate2dsprite`
+      ✓ `SKILL.md`
+    ▸ `imagine-grok-build`
+      ✓ `SKILL.md`
+    ▸ `multiplayer-p2p`
+      ✓ `SKILL.md`
+    ▸ `neon`
+      ✓ `SKILL.md`
+    ▸ `og`
+      ✓ `SKILL.md`
+    ▸ `threejs`
+      ✓ `SKILL.md`
+    ▸ `video2dsprite`
+      ✓ `SKILL.md`
+    ▸ `xai-api`
+      ✓ `SKILL.md`
+  ▸ `product`
+    ▸ `cache-guard`
+      ✓ `SKILL.md`
+    ▸ `codeart2d`
+      ✓ `SKILL.md`
+    ▸ `generate2dmap`
+      ✓ `SKILL.md`
+    ▸ `generate2dmedia`
+      ✓ `SKILL.md`
+    ▸ `generate2dsprite`
+      ✓ `SKILL.md`
+    ▸ `math-skills`
+      ✓ `SKILL.md`
+    ▸ `personas`
+      ▸ `prehool`
+        ✓ `SKILL.md`
+    ▸ `video2dsprite`
+      ✓ `SKILL.md`
+▸ `cache-guard`
+  ✓ `SKILL.md`
+  ▸ `references`
+    ✓ `mechanism.md`
+  ▸ `scripts`
+    ✓ `audit-session.mjs`
+▸ `codeart2d`
+  ✓ `SKILL.md`
+▸ `generate2dmap`
+  ✓ `SKILL.md`
+▸ `generate2dmedia`
+  ✓ `SKILL.md`
+▸ `generate2dsprite`
+  ✓ `SKILL.md`
+▸ `math-skills`
+  ✓ `MATH_SKILLS.md`
+  ✓ `SKILL.md`
+  ✓ `math_skills_master_seal.json`
+▸ `personas`
+  ▸ `prehool`
+    ✓ `PERSONA.md`
+    ✓ `SKILL.md`
+▸ `video2dsprite`
+  ✓ `SKILL.md`
+```
+
+
+### ▸ `src/`
+
+App builder UI and libraries (TanStack Start, React). Includes askGrok and token accounting.
+
+```
+✓ `README.md`
+▸ `components`
+  ✓ `preview-host-bridge.tsx`
+▸ `lib`
+  ▸ `ai`
+    ✓ `accounting.test.ts`
+    ✓ `ask-grok.server.ts`
+    ✓ `ask-grok.test.ts`
+    ✓ `ask-with-accounting.ts`
+    ✓ `token-accounting.ts`
+  ▸ `app-data`
+    ✓ `app-data.test.ts`
+    ✓ `client.server.ts`
+    ✓ `errors.ts`
+    ✓ `index.ts`
+    ✓ `login.ts`
+    ✓ `readiness-schedule.test.ts`
+    ✓ `readiness-schedule.ts`
+    ✓ `readiness.ts`
+    ✓ `server-only.ts`
+    ✓ `types.ts`
+    ✓ `use-connector-readiness.ts`
+  ▸ `auth`
+    ✓ `client.ts`
+    ✓ `email-password.ts`
+    ✓ `gate-identity.server.ts`
+    ✓ `gate-identity.test.ts`
+    ✓ `gate-session-marker.ts`
+    ✓ `gate-session.server.ts`
+    ✓ `gates.tsx`
+    ✓ `isolation.server.ts`
+    ✓ `middleware.ts`
+    ✓ `pglite-dialect.ts`
+    ✓ `popup.server.ts`
+    ✓ `preview.ts`
+    ✓ `provider.tsx`
+    ✓ `providers.ts`
+    ✓ `server.ts`
+    ✓ `sign-in-gate.test.ts`
+    ✓ `sign-in-gate.ts`
+    ✓ `use-current-user.ts`
+    ✓ `verify.server.ts`
+  ✓ `db.ts`
+  ✓ `env.server.ts`
+  ✓ `error-component.tsx`
+  ▸ `multiplayer`
+    ✓ `index.ts`
+    ✓ `p2p.ts`
+  ✓ `preview-embedder-origin.ts`
+  ✓ `preview-host-bridge.ts`
+  ✓ `preview-path-prefix.test.ts`
+  ✓ `preview-path-prefix.ts`
+```
+
+✓ `tavily.rs`
+✓ `tma.ptx`
+✓ `transformer.rs`
+✓ `tsconfig.json`
+✓ `vercel.json`
+✓ `vite.config.ts`
 ## Quick start
 
 ```bash
@@ -33,31 +637,8 @@ npm test
 npm run typecheck
 ```
 
-Set `XAI_API_KEY` (and optionally `XAI_MODEL`) for the `askGrok` server function in `src/lib/ai/`.
+Set `XAI_API_KEY` for cloud `askGrok`. Over the free-tier token threshold the call hands off to the local GGUF endpoint (`OPENAI_BASE_URL`).
 
-## License and headers
+## License
 
-This project is licensed under the GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
-
-Source files carry a short header pointing at that license:
-
-```
-Copyright (C) 2026 AHMAD ALI PARR
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as published
-by the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-See the GNU Affero General Public License for more details.
-You should have received a copy of the license along with this program.
-If not, see <https://www.gnu.org/licenses/>.
-```
-
-## Rules
-
-- Topic markdown lives in its section, not in the repository root.
-- Each section's README starts with a **Purpose** line.
-- Skill contracts are `SKILL.md` inside `skills/<name>/`.
-- KSB+ format docs stay in `ksb-plus/docs/`.
-- Anything only for later review goes in `archive/`.
+GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
