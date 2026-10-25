@@ -1,3 +1,7 @@
+# SPDX-License-Identifier: LicenseRef-Sovereign-Leviathan-SL-AGPL3-001
+# Copyright (c) 2026 Ahmad Ali Parr. All rights reserved.
+# Authored by Ahmad Ali Parr.
+# Licensed under the SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See LICENSE.
 # JSONL-oriented rough audit, not a JSON parser.
 # Usage: awk -f scripts/audit_tensor_dumps.awk dump.jsonl
 BEGIN { records=0; bytes=0; bad=0 }

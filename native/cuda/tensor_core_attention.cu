@@ -1,10 +1,8 @@
 // Copyright (C) 2026 AHMAD ALI PARR
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: LicenseRef-Sovereign-Leviathan-SL-AGPL3-001
+// Authored by Ahmad Ali Parr.
+// Licensed under the SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See LICENSE.
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published
-// by the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
 // tensor_core_attention.cu — Extended WMMA 16x16x16 Tensor Core attention (QK^T + online softmax + PV)
 // Target Volta/Turing/Ampere/Hopper, FP16 in / FP32 accum, head_dim tiling, causal.
 // Compile: nvcc -arch=sm_80 -ptx tensor_core_attention.cu -o attention.ptx

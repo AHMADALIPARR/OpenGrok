@@ -1,5 +1,7 @@
 // Copyright (C) 2026 AHMAD ALI PARR
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// SPDX-License-Identifier: LicenseRef-Sovereign-Leviathan-SL-AGPL3-001
+// Authored by Ahmad Ali Parr.
+// Licensed under the SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See LICENSE.
 // Q1.14 / Q3.12 fixed-point INFER4. Matches MACROGROK semantics.
 
 pub const Q1_14: i32 = 16384;

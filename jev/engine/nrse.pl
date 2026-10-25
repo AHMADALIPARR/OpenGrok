@@ -1,4 +1,8 @@
 #!/usr/bin/env perl
+# SPDX-License-Identifier: LicenseRef-Sovereign-Leviathan-SL-AGPL3-001
+# Copyright (c) 2026 Ahmad Ali Parr. All rights reserved.
+# Authored by Ahmad Ali Parr.
+# Licensed under the SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See LICENSE.
 use strict;
 use warnings;
 use utf8;

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LicenseRef-Sovereign-Leviathan-SL-AGPL3-001
+// Licensed under the SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See LICENSE.
 export declare const DEFAULT_APP_NAME: string;
 export declare const OG_SERVICE_URL_DEFAULT: string;
 export declare const OG_SITE_REL_PATH: string;

@@ -3,7 +3,7 @@
 OpenGrok is a production repository. Rust is the primary language (inference, ledger, accounting, PyTorch bridge). TypeScript in `src/` is the UI layer only. Jev is the default evaluation model.
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok  
-**License:** GNU Affero General Public License v3.0 ([LICENSE](LICENSE))  
+**License:** SNAPKITTY OPAQUE SOURCE LICENSE v1.0 ([LICENSE](LICENSE))  
 **Where files belong:** [docs/INDEX.md](docs/INDEX.md)
 
 ## Demo
@@ -661,7 +661,7 @@ Set `XAI_API_KEY` for cloud `askGrok`. Over the free-tier token threshold the ca
 
 ## License
 
-GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
+SNAPKITTY OPAQUE SOURCE LICENSE v1.0. See [LICENSE](LICENSE).
 
 ## Photos
 
