@@ -1,6 +1,6 @@
 # OpenGrok
 
-OpenGrok is a production repository that combines an app builder, native Tensor Core kernels, a fixed-point inference engine, skill contracts, a holographic ledger, and local GGUF bots under one tree.
+OpenGrok is a production repository. Rust is the primary language (inference, ledger, accounting, PyTorch bridge). TypeScript in `src/` is the UI layer only.
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok  
 **License:** GNU Affero General Public License v3.0 ([LICENSE](LICENSE))  
