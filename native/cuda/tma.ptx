@@ -1,0 +1,12 @@
+tma_mbarrier.ptx — Hopper TMA bulk tensor Shared::cluster + mbarrier
+// See README cuda::memcpy_async section. Single leader issues cp.async.bulk.tensor.2d
+// .version 7.8
+// .target sm_90
+//
+// Registers: %smem_buf (shared), %tensormap (64-bit), %coord0/1, %mbar_addr, %expected_bytes
+// 1. mbarrier.init.shared.b64 [%mbar],1
+// 2. @leader mbarrier.arrive.expect_tx.shared.b64 [%mbar], %expected_bytes
+// 3. @leader cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes
+//        [%smem_buf], [%tensormap, {%coord0,%coord1}], [%mbar]
+// 4. mbarrier.try_wait.parity.shared.b64 %done, [%mbar], %phase
+// 5. consumer reads %smem_buf; 6. mbarrier.arrive for double-buffer reuse
