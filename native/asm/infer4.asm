@@ -1,3 +1,14 @@
+// Copyright (C) 2026 AHMAD ALI PARR
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// See the GNU Affero General Public License for more details.
+// You should have received a copy of the license along with this program.
+// If not, see <https://www.gnu.org/licenses/>.
+
 ; MACROGROK — INFER4 (4-input fixed-point binary decision)
 ; AGC-inspired pseudo-ISA. Not authentic yaYUL. 15 data bits + parity.
 ; See README.md for Q formats and memory map.
