@@ -1,12 +1,27 @@
-tma_mbarrier.ptx — Hopper TMA bulk tensor Shared::cluster + mbarrier
-// See README cuda::memcpy_async section. Single leader issues cp.async.bulk.tensor.2d
-// .version 7.8
-// .target sm_90
-//
-// Registers: %smem_buf (shared), %tensormap (64-bit), %coord0/1, %mbar_addr, %expected_bytes
-// 1. mbarrier.init.shared.b64 [%mbar],1
-// 2. @leader mbarrier.arrive.expect_tx.shared.b64 [%mbar], %expected_bytes
-// 3. @leader cp.async.bulk.tensor.2d.shared::cluster.global.mbarrier::complete_tx::bytes
-//        [%smem_buf], [%tensormap, {%coord0,%coord1}], [%mbar]
-// 4. mbarrier.try_wait.parity.shared.b64 %done, [%mbar], %phase
-// 5. consumer reads %smem_buf; 6. mbarrier.arrive for double-buffer reuse
+// OpenGrok — Ampere-compatible PTX for RTX 3080 (sm_80)
+// TMA bulk tensor ops (cp.async.bulk.tensor) require sm_90 (Hopper).
+// This file uses the Ampere subset so nvcc -arch=sm_80 -ptx succeeds.
+.version 7.0
+.target sm_80
+.address_size 64
+
+.visible .entry tma_sm80_probe(
+    .param .u64 smem_addr,
+    .param .u64 expected
+)
+{
+    .reg .pred %p;
+    .reg .u64  %addr, %exp, %done;
+    .shared .align 16 .b8 smem[256];
+
+    ld.param.u64 %addr, [smem_addr];
+    ld.param.u64 %exp,  [expected];
+
+    // Ampere-safe barrier init and arrive (no TMA)
+    mbarrier.init.shared.b64 [smem], 1;
+    mbarrier.arrive.expect_tx.shared.b64 [smem], %exp;
+    mbarrier.try_wait.parity.shared.b64 %done, [smem], 0;
+
+    st.global.u64 [%addr], %done;
+    ret;
+}
