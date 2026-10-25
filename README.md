@@ -6,35 +6,33 @@ Native Tensor Core attention and MACROGROK harness with app builder workspace.
 
 ## Structure
 
-- `native/` — Low-level segments (see `native/README.md` for full breakdown)
-  - `native/cuda/` — Tensor Core kernels, including the **full WMMA matrix multiplication engine**
+- `native/` — Low-level segments (see `native/README.md`)
+  - `native/cuda/` — Tensor Core kernels, including the full WMMA matrix multiplication engine
   - `native/rust/` — Host code, AssemblySyscall layer, C FFI
   - `native/asm/` — MACROGROK pseudo-ISA
-- `skills/` — Cherry-picked skill definitions from https://github.com/AHMADALIPARR/OpenGrok-Skills
-  - `codeart2d`, `generate2dmap`, `generate2dmedia`, `generate2dsprite`, `video2dsprite`
+  - `native/fixed_point/` — Dedicated fixed-point engine package
+- `skills/` — Cherry-picked skill definitions (see `skills/README.md`)
+- `emacs/vm/` — Emacs VM (View Mail) reference for GNU Emacs
 - `src/` — TypeScript / React app builder (TanStack Start)
 - `.grok/` — Skills and references for the app builder
-- `ksb-plus/` — Separate K-language binary serialization contract (Layer 0)
+- `ksb-plus/` — K-language binary serialization (Layer 0 + Layer 1 tables)
+- `ports/` — Ports of external systems (e.g. TermHive messaging)
+
+## Emacs VM
+
+`emacs/vm/` holds the reference and example configuration for the Emacs mail reader VM (View Mail). Upstream: https://gitlab.com/emacs-vm/vm
+
+Install from NonGNU ELPA: `M-x package-install RET vm RET`
 
 ## Skills
 
-Skill definitions are in `skills/`. Full scripts, references and schemas live in the source repository. See `skills/README.md`.
+Skill definitions are in `skills/`. See `skills/README.md`.
 
 ## Matrix Multiplication Engine
 
-`native/cuda/matrix_mul.cu` is a complete tiled WMMA GEMM (FP16 in, FP32 accum, 16×16×16 tiles). It supports arbitrary M/N/K, alpha scaling, and cooperative shared-memory loads. Attention and future dense operators are built on top of this engine.
+`native/cuda/matrix_mul.cu` is a complete tiled WMMA GEMM.
 
-```bash
-nvcc -arch=sm_80 -ptx native/cuda/matrix_mul.cu -o gemm.ptx
-```
-
-See `native/README.md` for what every segment does.
-
-## MACROGROK Fixed-Point (INFER4)
+## MACROGROK Fixed-Point
 
 - Assembly: `native/asm/infer4.asm`
-- Rust + AssemblySyscall + C FFI: `native/rust/fixed_point.rs`
-
-## App Builder
-
-The TypeScript workspace follows the Grok app builder contract (see AGENTS.md).
+- Dedicated package: `native/fixed_point/`
