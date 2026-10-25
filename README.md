@@ -6,37 +6,28 @@ Native Tensor Core attention and MACROGROK harness with app builder workspace.
 
 ## Structure
 
-- `native/cuda/` — CUDA kernels (Tensor Core attention, TMA)
-- `native/rust/` — Rust host code (attention, memory, transformer, fixed-point + FFI)
-- `native/asm/` — MACROGROK pseudo-ISA assembly (INFER4)
+- `native/` — Low-level segments (see `native/README.md` for full breakdown)
+  - `native/cuda/` — Tensor Core kernels, including the **full WMMA matrix multiplication engine**
+  - `native/rust/` — Host code, AssemblySyscall layer, C FFI
+  - `native/asm/` — MACROGROK pseudo-ISA
 - `src/` — TypeScript / React app builder (TanStack Start)
 - `.grok/` — Skills and references for the app builder
-- `ksb-plus/` — Related subsystem
+- `ksb-plus/` — Separate K-language binary serialization contract (Layer 0)
 
-## CUDA Kernel
+## Matrix Multiplication Engine
 
-The Tensor Core attention kernel (`native/cuda/tensor_core_attention.cu`) implements WMMA 16x16x16 QK^T + softmax + PV for FP16/FP32, with head_dim tiling and causal support. Extended with online softmax skeleton and PV stage.
+`native/cuda/matrix_mul.cu` is a complete tiled WMMA GEMM (FP16 in, FP32 accum, 16×16×16 tiles). It supports arbitrary M/N/K, alpha scaling, and cooperative shared-memory loads. Attention and future dense operators are built on top of this engine.
 
-Compile example:
+```bash
+nvcc -arch=sm_80 -ptx native/cuda/matrix_mul.cu -o gemm.ptx
 ```
-nvcc -arch=sm_80 -ptx native/cuda/tensor_core_attention.cu -o attention.ptx
-```
+
+See `native/README.md` for what every segment does.
 
 ## MACROGROK Fixed-Point (INFER4)
 
-Assembly source: `native/asm/infer4.asm`  
-Rust implementation with Assembly Syscall Layer + C FFI: `native/rust/fixed_point.rs`
-
-The Rust port matches the Python simulator and assembly semantics (Q1.14 / Q3.12, 3/4 low-pass STATE, saturation flags).  
-FFI entry point:
-```c
-int macrogrok_infer4(i16 i0, i16 i1, i16 i2, i16 i3,
-                     i16 *out_state, i32 *out_score, u16 *out_flags);
-```
-
-## Rust Harness
-
-See `native/rust/` for the cudarc-based host that launches the kernels and manages KV cache, plus the fixed-point syscall layer.
+- Assembly: `native/asm/infer4.asm`
+- Rust + AssemblySyscall + C FFI: `native/rust/fixed_point.rs`
 
 ## App Builder
 
