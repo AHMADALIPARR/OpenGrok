@@ -1,6 +1,7 @@
 defmodule TermHive.MessageRouter do
   @moduledoc """
   Routes messages between agents and injects them into the target's input.
+  Default injector writes to the local terminal (stdout).
   Fuzzy matching on name and role (case-insensitive, partial).
   """
   use GenServer
@@ -17,7 +18,7 @@ defmodule TermHive.MessageRouter do
 
   @impl true
   def init(_) do
-    {:ok, %{injector: &default_injector/2}}
+    {:ok, %{injector: &terminal_injector/2}}
   end
 
   @impl true
@@ -31,8 +32,9 @@ defmodule TermHive.MessageRouter do
         {:reply, {:error, :unknown_sender}, state}
 
       from_agent ->
-        teammates = AgentRegistry.list_project(from_agent.project_id)
-        |> Enum.reject(&(&1.id == from_id))
+        teammates =
+          AgentRegistry.list_project(from_agent.project_id)
+          |> Enum.reject(&(&1.id == from_id))
 
         case resolve_target(teammates, target_query) do
           nil ->
@@ -68,8 +70,9 @@ defmodule TermHive.MessageRouter do
     end)
   end
 
-  defp default_injector(agent_id, text) do
-    IO.puts("[inject → #{agent_id}] #{text}")
+  # Default: write the injection to the local terminal session.
+  defp terminal_injector(agent_id, text) do
+    IO.puts(:stdio, "[inject → #{agent_id}] #{text}")
     :ok
   end
 end
