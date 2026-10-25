@@ -2,7 +2,45 @@
 
 **Purpose:** End-to-end local GGUF workflow for Grok Bots.
 
-`server.mjs` is an OpenAI-compatible stand-in for `llama-server`. It serves `/v1/models` and `/v1/chat/completions` and records request stats. Use it when `llama-server` is not available; swap the base URL for a real runner when you have one.
+<div align="center">
+
+## Benchmark
+
+**136 turns/sec**
+
+| Turns | Total | Avg latency | Tokens | Requests |
+|------:|------:|------------:|-------:|---------:|
+| 20 | 146 ms | 5 ms | 334 | 23 |
+
+Model: `llama-2-7b.Q4_K_M.gguf` · Endpoint: `http://127.0.0.1:8080/v1` · No cloud fallback
+
+</div>
+
+## Full demo
+
+```
+=== 1. Handshake ===
+base: http://127.0.0.1:8080/v1
+PASS: local models endpoint responded
+models: ['llama-2-7b.Q4_K_M.gguf']
+PASS: local handshake complete (no cloud fallback)
+
+=== 2. Demo turns ===
+Q: ping
+A: local-gguf: received 1 tokens. echo="ping"  (9 ms)
+Q: what is 2+2
+A: local-gguf: received 3 tokens. echo="what is 2+2"  (9 ms)
+Q: summarize: grok bots local gguf
+A: local-gguf: received 8 tokens. echo="summarize: grok bots local gguf"  (11 ms)
+
+=== 3. Benchmark (20 turns) ===
+20 turns in 146 ms  (~136 turns/sec)
+
+=== 4. Server stats ===
+requests: 23 · totalTokens: 334 · avgMs: 5 · model: llama-2-7b.Q4_K_M.gguf
+
+=== DONE ===
+```
 
 ## Run
 
