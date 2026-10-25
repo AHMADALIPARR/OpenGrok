@@ -1,0 +1,9 @@
+{
+  "default_evaluation_model": "jev",
+  "artifact": "jev/models/jev.gguf",
+  "manifest": "jev/models/jev.manifest.json",
+  "engine": "jev/engine/nrse.pl",
+  "repl": "jev/repl/repl.py",
+  "role": "evaluation",
+  "note": "Jev is the default evaluation model. It returns byte spans, not generated prose."
+}
