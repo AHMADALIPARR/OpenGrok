@@ -13,12 +13,18 @@ Cherry-picked skill definitions from multiple sources.
 | `video2dsprite` | Turn one approved master still into a full animated sprite set via image-to-video. | OpenGrok-Skills |
 | `cache-guard` | Image / prompt-cache thrash prevention. Batch image reads, delegate vision to subagents, write notes, keep bulk data out of context. Includes audit script. | [claude-cache-guard](https://github.com/0x0funky/claude-cache-guard) |
 | `math-skills` | Mathematical master skill set. Six layers: enumeration, isomorphism, symmetry breaking, Hadamard, probabilistic method, circuit complexity. Fortran + APL + AXIOM. WORM-sealed. | [math-skills](https://github.com/SNAPKITTYWEST/math-skills) |
+| `personas/prehool` | Master Persona — PreHool, the Grok Mathematician. Precise, constructive, grounded in the six math skills. | Local |
+
+## Personas
+
+- **PreHool** (`skills/personas/prehool/`) — Grok Mathematician. Motto: "Finite methods first. Conjectures stay labeled."
 
 ## Full source
 
 - 2D skills: https://github.com/AHMADALIPARR/OpenGrok-Skills
 - cache-guard: fully vendored under `skills/cache-guard/`
-- math-skills: definitions + design doc + master seal under `skills/math-skills/`; full Fortran/APL/AXIOM implementations in the source repo
+- math-skills: definitions + design doc + master seal under `skills/math-skills/`
+- PreHool: fully defined under `skills/personas/prehool/`
 
 To bring full implementations:
 
