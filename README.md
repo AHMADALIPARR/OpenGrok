@@ -1,6 +1,6 @@
 # OpenGrok
 
-OpenGrok is a production repository. Rust is the primary language (inference, ledger, accounting, PyTorch bridge). TypeScript in `src/` is the UI layer only.
+OpenGrok is a production repository. Rust is the primary language (inference, ledger, accounting, PyTorch bridge). TypeScript in `src/` is the UI layer only. Jev is the default evaluation model.
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok  
 **License:** GNU Affero General Public License v3.0 ([LICENSE](LICENSE))  
@@ -23,6 +23,7 @@ flowchart LR
   UI[src/ app builder] --> Ask[askGrok]
   Ask -->|under budget| Cloud[xAI API]
   Ask -->|over threshold| Local[bots/ local GGUF]
+  Ask -->|evaluate| Jev[jev/ default eval]
   Native[native/ CUDA + Rust + ASM] --> FP[fixed-point INFER4]
   KSB[ksb-plus/ codec] --> Ledger[ledger/ holographic]
   Skills[skills/ contracts] --> Bots[bots/ Grok Bots]
@@ -45,6 +46,7 @@ flowchart LR
 | ▸ | `emacs` | Emacs VM and Helm starter configs. |
 | ✓ | `eslint.config.mjs` | Root file. |
 | ✓ | `fixed-point` | Root file. |
+| ▸ | `jev` | Default evaluation model. NRSE engine, reduced GGUF, REPL. |
 | ▸ | `ksb-plus` | K-language binary serialization. Layer 0 envelope, Layer 1 tables, codec verification. |
 | ▸ | `ledger` | Holographic append-only ledger for tick-data and order books. |
 | ✓ | `main.rs` | Root file. |
@@ -628,6 +630,24 @@ App builder UI and libraries (TanStack Start, React). Includes askGrok and token
 ✓ `tsconfig.json`
 ✓ `vercel.json`
 ✓ `vite.config.ts`
+
+## Jev
+
+**Default evaluation model.** Non-regressive semantic engine plus reduced GGUF. Returns a byte span or `[-1, -1]`. Does not generate prose.
+
+| Path | Purpose |
+|------|---------|
+| `jev/engine/` | NRSE. Perl. `locate` / `audit` / `extract`. |
+| `jev/models/jev.gguf` | Evaluation artifact. |
+| `jev/repl/repl.py` | Read-Eval-Print loop. |
+| `jev/eval-default.json` | Declares Jev as the default. |
+
+```bash
+python3 jev/repl/repl.py --demo
+python3 jev/repl/repl.py
+perl jev/engine/nrse.pl locate jev/engine/tests/fixture.txt balance
+```
+
 ## Quick start
 
 ```bash
