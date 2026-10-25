@@ -1,0 +1,9 @@
+[package]
+name = "pytorch-bridge"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "pytorch-bridge"
+path = "src/main.rs"
