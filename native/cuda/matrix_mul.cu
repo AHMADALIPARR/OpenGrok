@@ -1,3 +1,14 @@
+// Copyright (C) 2026 AHMAD ALI PARR
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published
+// by the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// See the GNU Affero General Public License for more details.
+// You should have received a copy of the license along with this program.
+// If not, see <https://www.gnu.org/licenses/>.
+
 // matrix_mul.cu — Full Tensor Core matrix multiplication engine (WMMA GEMM)
 // FP16 inputs, FP32 accumulation, tiled 16x16x16 WMMA.
 // Supports general A(M,K) * B(K,N) -> C(M,N) with optional scaling and bias.
