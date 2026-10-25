@@ -662,3 +662,21 @@ Set `XAI_API_KEY` for cloud `askGrok`. Over the free-tier token threshold the ca
 ## License
 
 GNU Affero General Public License v3.0. See [LICENSE](LICENSE).
+
+## Photos
+
+<div align="center">
+
+![Grok Bots local GGUF end-to-end](bots/demo/gguf-demo.png)
+
+**136 turns/sec** · 20 turns · 146 ms · 5 ms avg · 334 tokens · no cloud fallback
+
+</div>
+
+| | |
+|:---:|:---:|
+| ![icon](public/__grok/icon-180.png) | ![phone](public/__grok/install/assets/homescreen/ob-phone.png) |
+| App icon | Install phone |
+| ![ipad](public/__grok/install/assets/homescreen/ob-ipad.png) | ![logo](public/__grok/install/assets/homescreen/logo-grok.svg) |
+| Install iPad | Logo |
+
