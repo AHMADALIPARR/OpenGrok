@@ -11,3 +11,6 @@ pub mod accounting;
 pub use fixed_point::infer4;
 pub use ledger::{HolographicLedger, OrderBook, Tick, Side, EventKind};
 pub use accounting::{Accounting, Thresholds};
+
+pub mod tools;
+pub use tools::{call, parse, ToolCall, ToolResult};
