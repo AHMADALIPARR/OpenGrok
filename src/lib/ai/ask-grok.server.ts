@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { env } from "~/lib/env.server";
+import { env } from "@/lib/env.server";
 
 const AskInput = z.object({
   prompt: z.string().trim().min(1).max(32_000),
