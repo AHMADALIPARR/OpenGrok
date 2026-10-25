@@ -1,0 +1,41 @@
+{
+  "format": "GGUF v3",
+  "output": "/mnt/data/recursive_tensor_reduction/demo_reduced.gguf",
+  "bytes": 576,
+  "sha256": "a990af0bcf5f2e656d40a08379750e4d21b7a4c5d76c255e70357acc174e35d8",
+  "operation": "mean",
+  "source_files": [
+    "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+    "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+  ],
+  "source_count": 2,
+  "tensor_count": 2,
+  "tensors": [
+    {
+      "name": "demo.bias",
+      "shape": [
+        2
+      ],
+      "dtype_written": "F32",
+      "source_dtype": "f32",
+      "source_files": [
+        "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+        "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+      ]
+    },
+    {
+      "name": "demo.weight",
+      "shape": [
+        2,
+        2
+      ],
+      "dtype_written": "F32",
+      "source_dtype": "f32",
+      "source_files": [
+        "/mnt/data/recursive_tensor_reduction/demo_dumps/run_a/dump.json",
+        "/mnt/data/recursive_tensor_reduction/demo_dumps/run_b/nested/dump.json"
+      ]
+    }
+  ],
+  "warning": "GGUF structural output does not establish compatibility with a particular model architecture or semantic quality."
+}
