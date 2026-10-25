@@ -1,43 +1,54 @@
 # OpenGrok
 
-Native Tensor Core attention and MACROGROK harness with app builder workspace.
+Production repository for the OpenGrok app builder, native Tensor Core kernels, and MACROGROK fixed-point harness.
 
 **Repository:** https://github.com/AHMADALIPARR/OpenGrok
 
-## Structure
+## Layout
 
-- `native/` — Low-level segments (see `native/README.md`)
-  - `native/cuda/` — Tensor Core kernels, including the full WMMA matrix multiplication engine
-  - `native/rust/` — Host code, AssemblySyscall layer, C FFI
-  - `native/asm/` — MACROGROK pseudo-ISA
-  - `native/fixed_point/` — Dedicated fixed-point engine package
-- `skills/` — Cherry-picked skill definitions (see `skills/README.md`)
-- `emacs/` — Emacs packages and references
-  - `emacs/vm/` — Emacs VM (View Mail)
-  - `emacs/helm/` — Helm incremental completion framework
-- `src/` — TypeScript / React app builder (TanStack Start)
-- `.grok/` — Skills and references for the app builder
-- `ksb-plus/` — K-language binary serialization (Layer 0 + Layer 1 tables)
-- `ports/` — Ports of external systems (e.g. TermHive messaging)
+```
+.
+├── src/                 App builder (TanStack Start, React)
+├── server/              Server entry and routes
+├── native/              Low-level code
+│   ├── cuda/            Tensor Core kernels and WMMA GEMM
+│   ├── rust/            Host code, FFI, AssemblySyscall layer
+│   ├── asm/             MACROGROK pseudo-ISA
+│   └── fixed_point/     Dedicated fixed-point package
+├── skills/             Skill definitions (SKILL.md contracts)
+├── emacs/              Emacs package notes (vm, helm)
+├── ksb-plus/           K-language binary serialization (Layer 0 + Layer 1)
+├── ports/              Ports of external systems
+├── migrations/         Database migrations
+├── scripts/            Build and maintenance scripts
+├── public/             Static assets
+├── archive/            Review material (nothing required to build)
+└── package.json        Node app
+```
 
-## Emacs
+## Quick start
 
-| Package | Path | Upstream |
-|---------|------|----------|
-| VM (View Mail) | `emacs/vm/` | https://gitlab.com/emacs-vm/vm |
-| Helm | `emacs/helm/` | https://github.com/emacs-helm/helm |
+```bash
+npm install
+npm run dev          # http://localhost:8080
+npm test
+npm run typecheck
+```
 
-Install from ELPA: `M-x package-install RET vm RET` / `M-x package-install RET helm RET`
+Set `XAI_API_KEY` (and optionally `XAI_MODEL`) for the `askGrok` server function in `src/lib/ai/`.
 
-## Skills
+## Native
 
-Skill definitions are in `skills/`. See `skills/README.md`.
+See `native/README.md`.
 
-## Matrix Multiplication Engine
+- CUDA: `native/cuda/matrix_mul.cu` (tiled WMMA GEMM)
+- Fixed-point: `native/fixed_point/` and `native/asm/infer4.asm`
 
-`native/cuda/matrix_mul.cu` is a complete tiled WMMA GEMM.
+## Skills and Emacs
 
-## MACROGROK Fixed-Point
+- Skills: `skills/` (see `skills/README.md`)
+- Emacs VM and Helm notes: `emacs/vm/`, `emacs/helm/`
 
-- Assembly: `native/asm/infer4.asm`
-- Dedicated package: `native/fixed_point/`
+## Review
+
+Loose root stubs and past attachments are collected under `archive/` so the root stays clean. Nothing there is required to build. Go through `archive/root-stubs/` and keep or drop as you see fit.
