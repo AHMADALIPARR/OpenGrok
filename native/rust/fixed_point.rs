@@ -1,0 +1,61 @@
+//! MACROGROK fixed-point INFER4 — Rust port of MACROGROK/src/sim.py + examples/infer4.asm
+//! Q1.14 (16384 per 1.0), Q3.12 (4096 per 1.0), Q7.24 ACC, saturate.
+
+const WEIGHTS_Q1_14: [i16; 4] = [2458, -1638, 819, 3277];
+const BIAS_Q3_12: i32 = -256;
+const FLAG_VALID: u16 = 0x1;
+const FLAG_SAT: u16 = 0x2;
+const FLAG_POSITIVE: u16 = 0x4;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub struct Q1_14(pub i16);
+
+pub fn infer4(input: [Q1_14; 4]) -> (i16, i32, u16) {
+    // DOT4 Q1.14*Q1.14>>4 accum Q3.24
+    let mut acc: i32 = 0;
+    for (w, inp) in WEIGHTS_Q1_14.iter().zip(input.iter()) {
+        let prod = (*w as i32) * (inp.0 as i32); // Q2.28
+        acc = acc.wrapping_add(prod >> 4);
+    }
+    let mut tmp0 = acc >> 12; // Q3.12
+    tmp0 += BIAS_Q3_12;
+    let mut flags: u16 = 0;
+    let mut sat = false;
+    if tmp0 < -8192 {
+        tmp0 = -8192;
+        sat = true;
+    }
+    if tmp0 > 8191 {
+        tmp0 = 8191;
+        sat = true;
+    }
+    if tmp0 >= 0 {
+        flags |= FLAG_POSITIVE;
+    }
+    if sat {
+        flags |= FLAG_SAT;
+    }
+    let tmp1: i16 = if tmp0 >= 0 {
+        16384u16 as i16
+    } else {
+        -16384
+    }; // +1.0 / -1.0 Q1.14
+    // Persistent STATE (Q1.14 scale) — 3/4 low-pass
+    use std::sync::Mutex;
+    static STATE: Mutex<i16> = Mutex::new(0);
+    let mut state = STATE.lock().unwrap();
+    *state = ((3 * (*state as i32) + tmp1 as i32) / 4) as i16;
+    let out = *state;
+    flags |= FLAG_VALID;
+    (out, tmp0, flags)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_infer4_basic() {
+        let (out, _, _) = infer4([Q1_14(16384), Q1_14(0), Q1_14(0), Q1_14(0)]);
+        assert!(out != 0);
+    }
+}
