@@ -11,6 +11,7 @@ Every section has one job. Markdown for a topic lives in that section.
 | `emacs/` | Emacs package notes (VM, Helm) | `emacs/README.md`, `emacs/vm/README.md`, `emacs/helm/README.md` |
 | `ksb-plus/` | K-language binary serialization | `ksb-plus/README.md`, `ksb-plus/docs/` |
 | `ports/` | Ports of external systems | `ports/README.md` |
+| `bots/` | Grok Bots using local GGUF models via microagent | `bots/README.md`, `bots/skills/gguf-local/SKILL.md` |
 | `migrations/` | Database migrations | `migrations/README.md` |
 | `scripts/` | Build and maintenance scripts | `scripts/README.md` |
 | `public/` | Static assets | `public/README.md` |
